@@ -6,7 +6,10 @@ export function HeroSection() {
       <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-16 lg:flex-row lg:items-center lg:gap-12">
         {/* Left text column */}
         <div className="flex flex-1 flex-col items-center text-center lg:items-start lg:text-left">
-          <h1 className="font-heading text-4xl font-extrabold leading-tight tracking-tight text-foreground text-balance md:text-5xl lg:text-6xl">
+          <h1
+            className="font-heading text-4xl font-extrabold leading-tight tracking-tight text-foreground text-balance md:text-5xl lg:text-6xl"
+            style={{ fontStretch: "normal", transform: "none", fontWeight: 800 }}
+          >
             DeFi at Your Command
           </h1>
           <p className="mt-5 max-w-lg text-lg leading-relaxed text-[#A8A4B8] md:text-xl">

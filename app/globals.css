@@ -49,6 +49,15 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Ensure Syne heading font renders with natural, uncompressed proportions */
+.font-heading {
+  font-stretch: normal;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
 /* Scroll-triggered fade-in animation */
 @keyframes fadeInUp {
   from {

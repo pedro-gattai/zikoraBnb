@@ -54,7 +54,10 @@ export function HowItWorksSection() {
                 }`}
                 style={{ transitionDelay: inView ? `${200 + i * 150}ms` : "0ms" }}
               >
-                <span className="font-heading text-4xl font-extrabold text-[#FF6B2C] md:text-5xl">
+                <span
+                  className="font-heading text-4xl font-extrabold text-[#FF6B2C] md:text-5xl"
+                  style={{ fontStretch: "normal", transform: "none", fontWeight: 800 }}
+                >
                   {step.number}
                 </span>
                 <h3 className="mt-4 font-heading text-xl font-bold text-foreground">
