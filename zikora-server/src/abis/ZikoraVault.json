@@ -1,0 +1,15 @@
+[
+  "function executeSwap(address tokenIn, address tokenOut, uint24 fee, uint256 amountIn, uint256 amountOutMin) external returns (uint256 amountOut)",
+  "function executeVenusSupply(address vToken, address underlying, uint256 amount) external",
+  "function executeVenusRedeem(address vToken, uint256 amount) external",
+  "function getTokenBalance(address token) external view returns (uint256)",
+  "function getBNBBalance() external view returns (uint256)",
+  "function maxTradePercent() external view returns (uint256)",
+  "function maxSlippageBps() external view returns (uint256)",
+  "function operator() external view returns (address)",
+  "function owner() external view returns (address)",
+  "function paused() external view returns (bool)",
+  "event SwapExecuted(address indexed tokenIn, address indexed tokenOut, uint256 amountIn, uint256 amountOut)",
+  "event VenusSupplied(address indexed vToken, uint256 amount)",
+  "event VenusRedeemed(address indexed vToken, uint256 amount)"
+]

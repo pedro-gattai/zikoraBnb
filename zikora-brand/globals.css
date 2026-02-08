@@ -1,0 +1,189 @@
+/* ============================================
+   ZIKORA — Global Styles
+   Import: @import './globals.css';
+   Fonts: Add to <head> or next.config:
+   https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap
+   ============================================ */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ---- CSS Custom Properties ---- */
+:root {
+  /* Primary */
+  --zikora-orange: #FF6B2C;
+  --zikora-orange-light: #FF8F5C;
+  --zikora-orange-dark: #E55A1E;
+
+  /* Backgrounds */
+  --zikora-bg: #12121A;
+  --zikora-surface: #1A1A26;
+  --zikora-border: #2A2A3A;
+  --zikora-border-hover: #3A3A4A;
+
+  /* Text */
+  --text-primary: #F0EDE6;
+  --text-secondary: #A8A4B8;
+  --text-muted: #6B6880;
+
+  /* Semantic */
+  --color-success: #00E676;
+  --color-error: #FF5252;
+  --color-warning: #F0B90B;
+  --color-info: #00BCD4;
+
+  /* Spacing */
+  --radius-card: 16px;
+  --radius-button: 12px;
+  --radius-input: 12px;
+  --radius-chat: 20px;
+}
+
+/* ---- Base Styles ---- */
+@layer base {
+  body {
+    @apply bg-zikora-dark text-text-primary font-dm;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3 {
+    @apply font-syne;
+  }
+
+  h1 { @apply text-h1; }
+  h2 { @apply text-h2; }
+  h3 { @apply text-h3; }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--zikora-bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--zikora-border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--zikora-border-hover);
+  }
+}
+
+/* ---- Component Classes ---- */
+@layer components {
+  /* Buttons */
+  .btn-primary {
+    @apply bg-zikora-orange text-zikora-dark font-syne font-semibold
+           px-6 py-3 rounded-button
+           transition-all duration-200 ease-smooth
+           hover:bg-zikora-orange-light hover:shadow-glow
+           active:scale-[0.98]
+           disabled:bg-zikora-surface disabled:text-text-muted disabled:cursor-not-allowed;
+  }
+
+  .btn-secondary {
+    @apply bg-transparent border border-zikora-border text-text-primary font-syne font-semibold
+           px-6 py-3 rounded-button
+           transition-all duration-200 ease-smooth
+           hover:border-zikora-orange/30 hover:text-zikora-orange
+           active:scale-[0.98];
+  }
+
+  .btn-ghost {
+    @apply bg-transparent text-zikora-orange font-syne font-semibold
+           px-4 py-2 rounded-button
+           transition-all duration-200 ease-smooth
+           hover:bg-zikora-orange/10;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-zikora-surface border border-zikora-border rounded-card p-6
+           transition-all duration-300 ease-smooth
+           hover:border-zikora-orange/30 hover:-translate-y-0.5 hover:shadow-glow;
+  }
+
+  .card-static {
+    @apply bg-zikora-surface border border-zikora-border rounded-card p-6;
+  }
+
+  /* Inputs */
+  .input {
+    @apply bg-zikora-dark border border-zikora-border rounded-input
+           px-4 py-3 text-text-primary placeholder:text-text-muted
+           transition-all duration-200 ease-smooth
+           focus:outline-none focus:border-zikora-orange focus:ring-2 focus:ring-zikora-orange/20;
+  }
+
+  /* Chat bubbles */
+  .chat-user {
+    @apply bg-zikora-orange text-zikora-dark rounded-chat rounded-br-sm
+           px-4 py-3 max-w-[80%] ml-auto;
+  }
+
+  .chat-bot {
+    @apply bg-zikora-surface border border-zikora-border text-text-primary
+           rounded-chat rounded-bl-sm px-4 py-3 max-w-[80%];
+  }
+
+  .chat-system {
+    @apply text-text-muted text-body-sm italic text-center py-2;
+  }
+
+  /* Labels & Tags */
+  .tag {
+    @apply font-mono text-label uppercase text-text-muted
+           border border-zikora-border px-3 py-1 rounded-full;
+  }
+
+  .tag-accent {
+    @apply font-mono text-label uppercase text-zikora-dark bg-zikora-orange
+           px-3 py-1 rounded-full font-bold;
+  }
+
+  /* Wallet address display */
+  .wallet-address {
+    @apply font-mono text-body-sm text-text-secondary
+           bg-zikora-dark border border-zikora-border
+           px-3 py-2 rounded-input truncate;
+  }
+
+  /* Section label */
+  .section-label {
+    @apply font-mono text-label uppercase text-text-muted
+           tracking-widest pb-3 border-b border-zikora-border;
+  }
+
+  /* Navbar */
+  .navbar {
+    @apply bg-zikora-surface/80 backdrop-blur-lg border-b border-zikora-border
+           px-6 py-3 flex items-center justify-between
+           sticky top-0 z-50;
+  }
+
+  /* Glow effect overlay */
+  .glow-overlay {
+    @apply absolute inset-0 pointer-events-none;
+    background: radial-gradient(ellipse at center, rgba(255, 107, 44, 0.08) 0%, transparent 70%);
+  }
+}
+
+/* ---- Utility Classes ---- */
+@layer utilities {
+  .text-gradient {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, #FF6B2C 0%, #FF8F5C 100%);
+  }
+
+  .border-glow {
+    border-color: rgba(255, 107, 44, 0.3);
+    box-shadow: 0 0 20px rgba(255, 107, 44, 0.1);
+  }
+
+  .animate-in {
+    animation: slide-up 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  }
+}

@@ -1,0 +1,13 @@
+[
+  "function mint(uint256 mintAmount) external returns (uint256)",
+  "function redeem(uint256 redeemTokens) external returns (uint256)",
+  "function redeemUnderlying(uint256 redeemAmount) external returns (uint256)",
+  "function balanceOf(address owner) view returns (uint256)",
+  "function balanceOfUnderlying(address owner) returns (uint256)",
+  "function supplyRatePerBlock() view returns (uint256)",
+  "function borrowRatePerBlock() view returns (uint256)",
+  "function exchangeRateCurrent() returns (uint256)",
+  "function exchangeRateStored() view returns (uint256)",
+  "function underlying() view returns (address)",
+  "function totalSupply() view returns (uint256)"
+]

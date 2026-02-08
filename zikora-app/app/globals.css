@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 20% 9%;
+    --foreground: 30 20% 93%;
+    --card: 240 20% 12%;
+    --card-foreground: 30 20% 93%;
+    --popover: 240 20% 12%;
+    --popover-foreground: 30 20% 93%;
+    --primary: 18 100% 56%;
+    --primary-foreground: 240 20% 9%;
+    --secondary: 240 17% 19%;
+    --secondary-foreground: 30 20% 93%;
+    --muted: 252 10% 46%;
+    --muted-foreground: 252 10% 46%;
+    --accent: 18 100% 56%;
+    --accent-foreground: 240 20% 9%;
+    --destructive: 0 100% 66%;
+    --destructive-foreground: 30 20% 93%;
+    --border: 240 17% 19%;
+    --input: 240 17% 19%;
+    --ring: 18 100% 56%;
+    --radius: 0.75rem;
+    --success: 145 100% 45%;
+    --warning: 46 88% 49%;
+    --info: 187 100% 37%;
+
+    --sidebar-background: 240 20% 7%;
+    --sidebar-foreground: 30 20% 93%;
+    --sidebar-primary: 18 100% 56%;
+    --sidebar-primary-foreground: 240 20% 9%;
+    --sidebar-accent: 240 17% 15%;
+    --sidebar-accent-foreground: 30 20% 93%;
+    --sidebar-border: 240 17% 19%;
+    --sidebar-ring: 18 100% 56%;
+
+    --chart-1: 18 100% 56%;
+    --chart-2: 145 100% 45%;
+    --chart-3: 187 100% 37%;
+    --chart-4: 46 88% 49%;
+    --chart-5: 280 65% 60%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.font-heading {
+  font-stretch: normal;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+@keyframes dotPulse {
+  0%, 80%, 100% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-dot-1 {
+  animation: dotPulse 1.4s infinite ease-in-out;
+  animation-delay: 0s;
+}
+
+.animate-dot-2 {
+  animation: dotPulse 1.4s infinite ease-in-out;
+  animation-delay: 0.2s;
+}
+
+.animate-dot-3 {
+  animation: dotPulse 1.4s infinite ease-in-out;
+  animation-delay: 0.4s;
+}

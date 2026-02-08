@@ -1,0 +1,4 @@
+[
+  "function getAllMarkets() view returns (address[])",
+  "function markets(address vToken) view returns (bool isListed, uint256 collateralFactorMantissa, bool isComped)"
+]
