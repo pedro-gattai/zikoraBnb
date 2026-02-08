@@ -16,12 +16,8 @@ export function CtaSection() {
           className="font-heading text-3xl font-bold leading-tight tracking-tight text-foreground text-balance md:text-4xl lg:text-5xl"
           style={{ fontStretch: "normal", fontWeight: 700 }}
         >
-          Ready to let the colony work for you?
+          Why click when you can chat?
         </h2>
-
-        <p className="mt-5 max-w-md text-lg leading-relaxed text-[#A8A4B8] md:text-xl">
-          Join traders using Zikora on BNB Chain. No sign-up required.
-        </p>
 
         <a
           href="#"
