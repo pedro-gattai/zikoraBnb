@@ -10,6 +10,7 @@ async function bootstrap() {
       'http://localhost:3000',
       'http://localhost:3001',
       /\.vercel\.app$/,
+      /\.pages\.dev$/,
     ],
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,

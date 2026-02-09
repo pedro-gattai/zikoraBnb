@@ -1,7 +1,9 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { ThrottlerGuard } from '@nestjs/throttler';
 import { ChatService } from './chat.service';
 
 @Controller('chat')
+@UseGuards(ThrottlerGuard)
 export class ChatController {
   constructor(private chatService: ChatService) {}
 
