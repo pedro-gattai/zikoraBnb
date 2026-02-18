@@ -2,11 +2,11 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
 import { ADDRESSES, ChainAddresses } from '../config/addresses';
-import * as ERC20Abi from '../abis/ERC20.json';
-import * as PancakeV3QuoterAbi from '../abis/PancakeV3Quoter.json';
-import * as PancakeV3RouterAbi from '../abis/PancakeV3Router.json';
-import * as VTokenAbi from '../abis/VToken.json';
-import * as VenusComptrollerAbi from '../abis/VenusComptroller.json';
+import ERC20Abi from '../abis/ERC20.json';
+import PancakeV3QuoterAbi from '../abis/PancakeV3Quoter.json';
+import PancakeV3RouterAbi from '../abis/PancakeV3Router.json';
+import VTokenAbi from '../abis/VToken.json';
+import VenusComptrollerAbi from '../abis/VenusComptroller.json';
 
 @Injectable()
 export class BlockchainService implements OnModuleInit {
