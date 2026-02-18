@@ -21,6 +21,9 @@ export class BlockchainService implements OnModuleInit {
   private vTokenIface: ethers.Interface;
   private zikoraRouterIface: ethers.Interface;
 
+  private mainnetProvider: ethers.JsonRpcProvider | null = null;
+  private _mainnetQuoter: ethers.Contract | null = null;
+
   constructor(private config: ConfigService) {}
 
   onModuleInit() {
@@ -38,6 +41,25 @@ export class BlockchainService implements OnModuleInit {
     this.zikoraRouterIface = new ethers.Interface(ZikoraRouterAbi);
 
     this.logger.log(`Connected to chain ${this.chainId} via ${rpcUrl} (read-only)`);
+  }
+
+  getMainnetQuoter(): ethers.Contract | null {
+    // Already on mainnet — use the normal quoter
+    if (this.chainId === 56) return null;
+
+    if (this._mainnetQuoter) return this._mainnetQuoter;
+
+    const mainnetRpcUrl =
+      this.config.get<string>('BSC_MAINNET_RPC_URL') ||
+      'https://bsc-dataseed1.binance.org/';
+    this.mainnetProvider = new ethers.JsonRpcProvider(mainnetRpcUrl);
+    this._mainnetQuoter = new ethers.Contract(
+      ADDRESSES[56].pancakeQuoter,
+      PancakeV3QuoterAbi,
+      this.mainnetProvider,
+    );
+    this.logger.log('Lazy-initialized mainnet provider for price fallback');
+    return this._mainnetQuoter;
   }
 
   getERC20(tokenAddress: string): ethers.Contract {

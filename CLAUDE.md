@@ -145,9 +145,9 @@ cd zikora-contracts && pnpm install && npx hardhat compile
 
 ## Current Stage (Feb 18, 2026)
 
-- **Landing page:** Done, deployed. Documentation page (`/docs`) with 9 sections and sidebar TOC.
-- **App frontend (`zikora-app/`):** Done — wallet connect, chat, portfolio dashboard, decision history, non-custodial signing flow (TxAction → MetaMask). Currently uses mock data.
-- **Smart contracts (`zikora-contracts/`):** ZikoraRouter.sol — non-custodial fee router (0.10% fee) for PancakeSwap V3 swaps and Venus Protocol supply/redeem. 28 tests passing. Deployed to BSC Testnet at `0x57491f59f41121f907e3820c6e57080D9BCaF5a9`.
-- **Backend (`zikora-server/`):** Done — NestJS with BlockchainService, MarketDataService, LLMService (Claude Haiku 4.5), RouterAgent, TradingAgent, YieldAgent, AnalyticsAgent, StoreService (in-memory). Non-custodial: prepares calldata routed through ZikoraRouter, no private keys. REST endpoints: POST /chat, GET /portfolio, GET /transactions, POST /transactions.
-- **Network:** BSC Testnet only. No mainnet deployment yet.
-- **Data:** Frontend uses mock/placeholder data until backend is connected.
+- **Landing page:** Done, deployed to Vercel.
+- **App frontend (`zikora-app/`):** Done, deployed to Vercel. Connected to backend API.
+- **Smart contracts (`zikora-contracts/`):** ZikoraRouter.sol deployed & verified on BSC Testnet at `0x57491f59f41121f907e3820c6e57080D9BCaF5a9`.
+- **Backend (`zikora-server/`):** Done, deployed to cloud. All agents operational.
+- **Network:** BSC Testnet. Contract verified on BSCScan.
+- **Status:** All components deployed. Running E2E tests on production environment.

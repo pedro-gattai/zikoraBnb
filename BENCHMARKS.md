@@ -17,7 +17,7 @@
 - [x] Initialize `zikora-server/` (NestJS project)
 - [x] Initialize `zikora-app/` (Next.js + wagmi + RainbowKit)
 - [x] Set up `.env.example` with all required variables
-- [ ] Configure BSC Testnet RPC + faucet BNB 👤
+- [x] Configure BSC Testnet RPC + faucet BNB ✅
 
 ### Smart Contracts (Days 1-3)
 - [x] Write `ZikoraVault.sol` (deposit, withdraw, executeSwap, executeSupply, executeRedeem)
@@ -52,7 +52,7 @@
 - [x] Build Decision History (past operations, reasoning logs, tx hashes)
 - [x] Build non-custodial signing flow (TxAction → MetaMask via wagmi)
 - [x] Handle tx confirmations and status updates in UI
-- [ ] Connect frontend to backend API (`NEXT_PUBLIC_API_URL`) 👤
+- [x] Connect frontend to backend API (`NEXT_PUBLIC_API_URL`) ✅
 
 ### Integration & Testing (Days 9-10)
 - [x] Fix tokens.ts — token addresses dynamic by chainId (mainnet vs testnet)
@@ -69,9 +69,9 @@
 ### Polish & Deploy (Days 11-12)
 - [x] UI polish (animations, loading states, error states)
 - [x] Mobile responsive pass
-- [ ] Deploy landing page to Vercel 👤
-- [ ] Deploy app frontend to Vercel 👤
-- [ ] Deploy backend to Railway/Render 👤
+- [x] Deploy landing page to Vercel ✅
+- [x] Deploy app frontend to Vercel ✅
+- [x] Deploy backend to Railway/Render ✅
 - [ ] Deploy to BSC Mainnet (if confident) 👤
 - [ ] Update landing page CTA links to deployed app URL 👤
 - [ ] Final end-to-end test on production 👤
@@ -126,8 +126,8 @@
 | End-to-end swap working | Yes | No |
 | End-to-end lending working | Yes | No |
 | Portfolio tracking working | Yes | No |
-| Frontend deployed | Yes | No |
-| Backend deployed | Yes | No |
+| Frontend deployed | Yes | Yes ✅ |
+| Backend deployed | Yes | Yes ✅ |
 | Demo video recorded | Yes | No |
 | Submitted to DoraHacks | Yes | No |
 
@@ -232,3 +232,11 @@
 - [x] `package.json` — @google/generative-ai → @anthropic-ai/sdk
 - [x] **ZikoraRouter deployed to BSC Testnet** — `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` (fee recipient: `0xD776060a35c0b91b2E456e92180a184f50e99324`)
 - [x] Updated `addresses.ts` with deployed ZikoraRouter address (chain 97)
+
+### Deploys & Verification
+- [x] ZikoraRouter verified on BSCScan Testnet ✅
+- [x] Backend deployed to cloud ✅
+- [x] App frontend deployed to Vercel ✅
+- [x] Landing page deployed to Vercel ✅
+- [x] Frontend connected to backend API ✅
+- [ ] E2E testing on deployed environment 👤 (in progress)

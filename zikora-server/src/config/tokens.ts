@@ -46,6 +46,27 @@ export function getTokens(chainId: number): Record<string, TokenMeta> {
   };
 }
 
+/**
+ * Maps a token address from one chain to its equivalent on another chain.
+ * Returns the address and decimals on the target chain, or undefined if not found.
+ */
+export function mapTokenAddress(
+  address: string,
+  fromChainId: number,
+  toChainId: number,
+): { address: string; decimals: number } | undefined {
+  const fromTokens = getTokens(fromChainId);
+  const lower = address.toLowerCase();
+  const entry = Object.values(fromTokens).find(
+    (t) => t.address.toLowerCase() === lower,
+  );
+  if (!entry) return undefined;
+  const toTokens = getTokens(toChainId);
+  const mapped = toTokens[entry.symbol];
+  if (!mapped) return undefined;
+  return { address: mapped.address, decimals: mapped.decimals };
+}
+
 export function resolveToken(
   symbolOrAddress: string,
   chainId: number,

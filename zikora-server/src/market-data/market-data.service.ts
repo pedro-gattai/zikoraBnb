@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ethers } from 'ethers';
 import { BlockchainService } from '../blockchain/blockchain.service';
-import { getTokens } from '../config/tokens';
+import { getTokens, mapTokenAddress } from '../config/tokens';
 
 interface CacheEntry<T> {
   value: T;
@@ -66,10 +66,60 @@ export class MarketDataService {
         this.setCache(cacheKey, price, 60_000);
         return price;
       } catch {
-        this.logger.error(`Cannot get price for ${tokenAddress}`);
-        return 0;
+        this.logger.warn(
+          `Testnet price failed for ${tokenAddress}, trying mainnet fallback`,
+        );
+        return this.getMainnetPriceFallback(tokenAddress, cacheKey);
       }
     }
+  }
+
+  private async getMainnetPriceFallback(
+    testnetTokenAddress: string,
+    cacheKey: string,
+  ): Promise<number> {
+    const quoter = this.blockchain.getMainnetQuoter();
+    if (!quoter) return 0;
+
+    const mapped = mapTokenAddress(
+      testnetTokenAddress,
+      this.blockchain.chainId,
+      56,
+    );
+    if (!mapped) {
+      this.logger.warn(`No mainnet mapping for ${testnetTokenAddress}`);
+      return 0;
+    }
+
+    const mainnetUsdt = '0x55d398326f99059fF775485246999027B3197955';
+    const amountIn = ethers.parseUnits('1', mapped.decimals);
+    const feeTiers = [2500, 500, 100];
+
+    for (const fee of feeTiers) {
+      try {
+        const result = await quoter.quoteExactInputSingle.staticCall({
+          tokenIn: mapped.address,
+          tokenOut: mainnetUsdt,
+          amountIn,
+          fee,
+          sqrtPriceLimitX96: 0,
+        });
+
+        const price = Number(ethers.formatUnits(result.amountOut, 18));
+        this.logger.log(
+          `Mainnet fallback price for ${testnetTokenAddress}: $${price.toFixed(2)} (fee ${fee})`,
+        );
+        this.setCache(cacheKey, price, 60_000);
+        return price;
+      } catch {
+        continue;
+      }
+    }
+
+    this.logger.error(
+      `Mainnet fallback also failed for ${testnetTokenAddress}`,
+    );
+    return 0;
   }
 
   async getVenusAPY(vTokenAddress: string): Promise<number> {

@@ -19,7 +19,7 @@ export class LlmService {
     if (apiKey) {
       this.client = new Anthropic({ apiKey });
     } else {
-      this.logger.warn('ANTHROPIC_API_KEY not set — LLM will use fallback');
+      this.logger.error('ANTHROPIC_API_KEY not set — AI features are disabled');
     }
   }
 
@@ -66,7 +66,7 @@ Rules:
     context?: string,
   ): Promise<string> {
     if (!this.client) {
-      return 'I understand your request. Let me process that for you.';
+      return 'AI service is currently unavailable. Please try again later or contact support.';
     }
 
     try {
@@ -99,10 +99,37 @@ Rules:
   private fallbackClassify(message: string): ClassifiedIntent {
     const lower = message.toLowerCase();
     if (/swap|trade|buy|sell|exchange|convert/.test(lower)) {
-      return { agent: 'trading', intent: 'swap', params: {} };
+      // Extract params: "swap 0.1 BNB to USDC" → { amount: "0.1", fromToken: "BNB", toToken: "USDC" }
+      const match = lower.match(
+        /(?:swap|trade|buy|sell|exchange|convert)\s+([\d.]+)\s+(\w+)\s+(?:to|for|into)\s+(\w+)/,
+      );
+      const params: Record<string, string> = {};
+      if (match) {
+        params.amount = match[1];
+        params.fromToken = match[2].toUpperCase();
+        params.toToken = match[3].toUpperCase();
+      }
+      return { agent: 'trading', intent: 'swap', params };
     }
     if (/supply|lend|deposit.*venus|redeem|apy|yield|earn/.test(lower)) {
-      return { agent: 'yield', intent: 'yield_action', params: {} };
+      const params: Record<string, string> = {};
+      // Extract: "supply 100 USDT" or "deposit 50 USDT to venus"
+      const supplyMatch = lower.match(
+        /(?:supply|lend|deposit)\s+([\d.]+)\s+(\w+)/,
+      );
+      if (supplyMatch) {
+        params.amount = supplyMatch[1];
+        params.token = supplyMatch[2].toUpperCase();
+        params.action = 'supply';
+      }
+      // Extract: "redeem 100 USDT"
+      const redeemMatch = lower.match(/(?:redeem|withdraw)\s+([\d.]+)\s+(\w+)/);
+      if (redeemMatch) {
+        params.amount = redeemMatch[1];
+        params.token = redeemMatch[2].toUpperCase();
+        params.action = 'redeem';
+      }
+      return { agent: 'yield', intent: 'yield_action', params };
     }
     if (/portfolio|balance|holdings|pnl|performance|recommend/.test(lower)) {
       return { agent: 'analytics', intent: 'portfolio_query', params: {} };
