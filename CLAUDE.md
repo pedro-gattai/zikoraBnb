@@ -38,7 +38,7 @@ Each subfolder has its own `CLAUDE.md` with module-specific conventions.
 | Backend | NestJS + TypeScript | `zikora-server/` |
 | App Frontend | Next.js + TypeScript + wagmi + RainbowKit | `zikora-app/` |
 | Landing Page | Next.js + TypeScript + Tailwind + shadcn/ui | `zikora-landing-page/` |
-| AI/LLM | Google Gemini 2.5 Pro | `zikora-server/` |
+| AI/LLM | Claude Haiku 4.5 (Anthropic) | `zikora-server/` |
 | Blockchain | BNB Smart Chain (BSC) Mainnet/Testnet | All |
 
 ---
@@ -67,6 +67,7 @@ See `zikora-brand/CLAUDE.md` for the full design system. Key rules:
 | USDT (BSC) | `0x55d398326f99059fF775485246999027B3197955` |
 | WBNB | `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` |
 | USDC (BSC) | `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` |
+| ZikoraRouter (Testnet) | `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` |
 
 ---
 
@@ -125,11 +126,28 @@ cd zikora-contracts && pnpm install && npx hardhat compile
 
 ---
 
-## Current Stage (Feb 17, 2026)
+## Deploy & Address Management
+
+1. **Source of truth:** `zikora-server/src/config/addresses.ts` is the single source of contract addresses per `chainId`. All services read from this file.
+2. **Placeholder pattern:** Contracts not yet deployed use `0x0000000000000000000000000000000000000000` with a `// TODO: deploy and update` comment.
+3. **Deploy checklist — update all 4 files:**
+   - `zikora-server/src/config/addresses.ts` — set the real address + remove the TODO
+   - `CLAUDE.md` — update the "Key Protocols & Addresses (BSC)" table
+   - `zikora-contracts/CLAUDE.md` — update the "Deployed Addresses" section
+   - `BENCHMARKS.md` — check the relevant checkbox + add a daily log entry
+4. **Verification:** Always verify the contract on BSCScan after deploy:
+   ```bash
+   npx hardhat verify --network bscTestnet <CONTRACT_ADDRESS> <CONSTRUCTOR_ARGS...>
+   ```
+5. **Etherscan V2 config:** `hardhat.config.ts` uses `etherscan.apiKey` as a plain `string` (not a per-network object). The BSCScan API key goes in the `BSCSCAN_API_KEY` env var.
+
+---
+
+## Current Stage (Feb 18, 2026)
 
 - **Landing page:** Done, deployed. Documentation page (`/docs`) with 9 sections and sidebar TOC.
 - **App frontend (`zikora-app/`):** Done — wallet connect, chat, portfolio dashboard, decision history, non-custodial signing flow (TxAction → MetaMask). Currently uses mock data.
-- **Smart contracts (`zikora-contracts/`):** ZikoraVault.sol exists but is not used in current non-custodial architecture. Backend interacts directly with PancakeSwap V3 and Venus Protocol contracts.
-- **Backend (`zikora-server/`):** Done — NestJS with BlockchainService, MarketDataService, LLMService (Google Gemini 2.5 Pro), RouterAgent, TradingAgent, YieldAgent, AnalyticsAgent, StoreService (in-memory). Non-custodial: prepares calldata only, no private keys. REST endpoints: POST /chat, GET /portfolio, GET /transactions, POST /transactions. Fixes applied: dynamic tokens.ts (chainId-aware), CORS env var support, docs corrections.
+- **Smart contracts (`zikora-contracts/`):** ZikoraRouter.sol — non-custodial fee router (0.10% fee) for PancakeSwap V3 swaps and Venus Protocol supply/redeem. 28 tests passing. Deployed to BSC Testnet at `0x57491f59f41121f907e3820c6e57080D9BCaF5a9`.
+- **Backend (`zikora-server/`):** Done — NestJS with BlockchainService, MarketDataService, LLMService (Claude Haiku 4.5), RouterAgent, TradingAgent, YieldAgent, AnalyticsAgent, StoreService (in-memory). Non-custodial: prepares calldata routed through ZikoraRouter, no private keys. REST endpoints: POST /chat, GET /portfolio, GET /transactions, POST /transactions.
 - **Network:** BSC Testnet only. No mainnet deployment yet.
 - **Data:** Frontend uses mock/placeholder data until backend is connected.

@@ -68,16 +68,12 @@ zikora-app/
 │   ├── use-portfolio.ts         # Portfolio data fetching
 │   ├── use-history.ts           # Transaction history + filtering
 │   └── use-mobile.tsx
-├── services/                    # API layer with mock fallback
-│   ├── api.ts                   # Base fetch wrapper, isUsingMock flag
+├── services/                    # API layer
+│   ├── api.ts                   # Base fetch wrapper
 │   ├── chat.service.ts          # POST /chat
 │   ├── portfolio.service.ts     # GET /portfolio
 │   ├── transactions.service.ts  # POST /transactions (reporting)
 │   └── history.service.ts       # GET /transactions
-├── mocks/                       # Mock data for offline dev
-│   ├── chat.mock.ts             # Intent-based mock responses
-│   ├── portfolio.mock.ts        # Mock portfolio data
-│   └── history.mock.ts          # Mock transaction history
 ├── types/
 │   └── index.ts                 # All TypeScript interfaces
 ├── providers/
@@ -155,16 +151,11 @@ On success: reportTransaction() to POST /transactions
 
 ---
 
-## API & Mock Layer
+## API Layer
 
 **File:** `services/api.ts`
 
-```
-NEXT_PUBLIC_API_URL set → calls real backend
-NEXT_PUBLIC_API_URL empty → falls back to mocks/
-```
-
-All services have automatic mock fallback. Frontend works fully offline.
+All services call the real backend via `apiFetch`. Requires `NEXT_PUBLIC_API_URL` to be set.
 
 ---
 
@@ -173,7 +164,7 @@ All services have automatic mock fallback. Frontend works fully offline.
 ```bash
 # .env.example
 NEXT_PUBLIC_BSC_TESTNET_RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
-NEXT_PUBLIC_API_URL=                    # Empty = mock mode
+NEXT_PUBLIC_API_URL=http://localhost:3001  # Required — backend URL
 NEXT_PUBLIC_EXPLORER_URL=https://testnet.bscscan.com
 ```
 
@@ -220,4 +211,4 @@ pnpm lint
 - `cn()` from `lib/utils.ts` for conditional class merging
 - Dark theme only
 - Non-custodial: frontend never handles private keys
-- All services must have mock fallback for offline development
+- All services require `NEXT_PUBLIC_API_URL` to be configured

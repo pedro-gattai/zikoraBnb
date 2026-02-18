@@ -114,40 +114,32 @@ Transaction confirmed on BSC
 | Smart Contracts | Solidity 0.8.20 + Hardhat |
 | Frontend | Next.js 14 + TypeScript + Tailwind + wagmi + RainbowKit |
 | Backend | NestJS + TypeScript |
-| AI/LLM | Google Gemini 2.5 Pro |
+| AI/LLM | Claude Haiku 4.5 (Anthropic) |
 | Blockchain | BSC Mainnet/Testnet (gas ~$0.001/tx) |
 | Hosting | Vercel (front) + Railway (back) |
 
-### Smart Contract — ZikoraVault.sol
+### Smart Contract — ZikoraRouter.sol
 
-> **Note:** ZikoraVault.sol was built for the custodial v1 architecture. The current architecture is **non-custodial**: the backend prepares calldata and the user signs transactions directly in MetaMask. The vault contract exists in the repo but is not deployed or used.
+Non-custodial fee router (0.10% / 10 bps). Users sign transactions that go through ZikoraRouter, which takes a small fee and forwards to the underlying protocol. 28 tests passing.
 
 ```solidity
-// Simplified concept (v1 — not used in current architecture)
-contract ZikoraVault {
-    address public owner;        // User — full control
-    address public operator;     // Backend — executes operations
+contract ZikoraRouter is Ownable, ReentrancyGuard {
+    uint256 public feeBps = 10;           // 0.10% fee
+    address public feeRecipient;          // Fee collection address
 
-    uint256 public maxTradePercent = 25;  // Max 25% per operation
-    uint256 public maxSlippageBps = 100;  // Max 1% slippage
+    // PancakeSwap V3 swaps (ERC-20 and BNB)
+    function swapExactInput(address tokenIn, address tokenOut, uint24 poolFee, uint256 amountIn, uint256 amountOutMinimum) external nonReentrant;
+    function swapExactInputBNB(address tokenOut, uint24 poolFee, uint256 amountOutMinimum) external payable nonReentrant;
 
-    // Owner functions
-    function deposit(address token, uint256 amount) external onlyOwner;
-    function withdraw(address token, uint256 amount) external onlyOwner;
-    function pause() external onlyOwner;
-    function setOperator(address newOperator) external onlyOwner;
+    // Venus Protocol supply/redeem
+    function supplyToVenus(address token, address vToken, uint256 amount) external nonReentrant;
+    function redeemFromVenus(address vToken, uint256 vTokenAmount) external nonReentrant;
 
-    // Operator functions (backend executes, limits enforced)
-    function executeSwap(
-        address tokenIn,
-        address tokenOut,
-        uint256 amountIn,
-        uint256 amountOutMin,
-        uint24 fee
-    ) external onlyOperator;
-
-    function executeVenusSupply(address vToken, uint256 amount) external onlyOperator;
-    function executeVenusRedeem(address vToken, uint256 amount) external onlyOperator;
+    // Admin
+    function setFeeBps(uint256 _feeBps) external onlyOwner;
+    function setFeeRecipient(address _feeRecipient) external onlyOwner;
+    function withdrawFees(address token) external onlyOwner;
+    function rescueToken(address token, uint256 amount) external onlyOwner;
 }
 ```
 
@@ -401,11 +393,11 @@ Daily posts on X with #VibingOnBNB, public GitHub, progressive demos. 40% of the
 zikora/
 ├── contracts/              # Smart Contracts (Hardhat)
 │   ├── contracts/
-│   │   └── ZikoraVault.sol
+│   │   └── ZikoraRouter.sol
 │   ├── scripts/
-│   │   └── deploy.ts
+│   │   └── deploy-router.ts
 │   ├── test/
-│   │   └── ZikoraVault.test.ts
+│   │   └── ZikoraRouter.test.ts
 │   └── hardhat.config.ts
 │
 ├── server/                 # Backend (NestJS)
@@ -452,7 +444,7 @@ zikora/
 ### Prerequisites
 - Node.js 18+
 - pnpm
-- Gemini API Key (free at aistudio.google.com)
+- Anthropic API Key
 - BNB Chain RPC (public or Ankr/NodeReal)
 
 ### Environment Variables
@@ -462,7 +454,7 @@ BSC_RPC_URL=https://data-seed-prebsc-1-s1.bnbchain.org:8545
 CHAIN_ID=97
 
 # AI
-GEMINI_API_KEY=<your key from aistudio.google.com>
+ANTHROPIC_API_KEY=<your Anthropic key>
 
 # Frontend
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=...
@@ -477,7 +469,7 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 |------|------|
 | BSC gas (testnet) | $0 (faucet) |
 | BSC gas (mainnet, ~200 txs) | ~$0.20 |
-| Gemini API (free tier) | $0 |
+| Claude Haiku API | ~$3/1K msgs |
 | Vercel (frontend hosting) | $0 (free tier) |
 | Railway (backend hosting) | $0 (free tier) |
 | **Total hackathon** | **< $1** |

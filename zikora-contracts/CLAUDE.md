@@ -4,7 +4,7 @@
 
 Smart contracts for the Zikora DeFAI platform on BNB Chain.
 
-**Important:** ZikoraVault.sol exists but is **not used** in the current non-custodial architecture. The backend interacts directly with PancakeSwap V3 and Venus Protocol contracts — it prepares calldata that users sign in MetaMask. The vault was an earlier custodial design that has been superseded.
+**ZikoraRouter.sol** is a non-custodial fee router (0.10% / 10 bps). Users sign transactions that go through ZikoraRouter, which takes a small fee and forwards to the underlying protocol (PancakeSwap V3 for swaps, Venus Protocol for lending). The backend prepares calldata targeting ZikoraRouter — users sign in MetaMask.
 
 ---
 
@@ -12,7 +12,7 @@ Smart contracts for the Zikora DeFAI platform on BNB Chain.
 
 - **Hardhat 2.22** + **TypeScript**
 - **Solidity 0.8.20**
-- **OpenZeppelin 5.x** (^5.1.0, installed 5.4.0) — Ownable, Pausable, ReentrancyGuard
+- **OpenZeppelin 5.x** (^5.1.0, installed 5.4.0) — Ownable, ReentrancyGuard, SafeERC20
 - **@nomicfoundation/hardhat-toolbox** — ethers, chai, coverage, gas reporter
 
 ---
@@ -22,34 +22,46 @@ Smart contracts for the Zikora DeFAI platform on BNB Chain.
 ```
 zikora-contracts/
 ├── contracts/
-│   ├── ZikoraVault.sol          # Main vault contract (not used in current arch)
+│   ├── ZikoraRouter.sol           # Non-custodial fee router (0.10% fee)
 │   ├── interfaces/
-│   │   ├── IPancakeV3Router.sol # PancakeSwap V3 router interface
-│   │   └── IVToken.sol          # Venus Protocol vToken interface
+│   │   ├── IPancakeV3Router.sol   # PancakeSwap V3 router interface
+│   │   ├── IVToken.sol            # Venus Protocol vToken interface
+│   │   └── IWBNB.sol              # Wrapped BNB interface
 │   └── mocks/
-│       └── MockERC20.sol        # Test mock token
+│       ├── MockERC20.sol          # Test mock token
+│       ├── MockPancakeRouter.sol  # Test mock PancakeSwap router
+│       └── MockVToken.sol         # Test mock Venus vToken
 ├── scripts/
-│   └── deploy.ts                # Deployment script
+│   └── deploy-router.ts           # Deployment script
 ├── test/
-│   └── ZikoraVault.test.ts      # Comprehensive tests (deposit, withdraw, access, safety)
-├── hardhat.config.ts            # Networks, compiler, optimizer
+│   └── ZikoraRouter.test.ts       # Comprehensive tests (28 tests)
+├── hardhat.config.ts              # Networks, compiler, optimizer
 ├── tsconfig.json
 ├── package.json
-└── .env                         # Private key, RPC URLs (gitignored)
+└── .env                           # Private key, RPC URLs (gitignored)
 ```
 
 ---
 
-## ZikoraVault.sol
+## ZikoraRouter.sol
 
-Owner-controlled vault with operator pattern:
-- **Deposit/Withdraw:** ERC-20 tokens and BNB (owner only)
-- **Operator functions:** `executeSwap`, `executeVenusSupply`, `executeVenusRedeem` (whenNotPaused)
-- **Safety limits:** `maxTradePercent` (default 25%), `maxSlippageBps` (default 100 = 1%)
-- **Pause/Unpause:** Owner can pause operator actions; owner can still withdraw when paused
-- **Events:** Deposited, Withdrawn, DepositedBNB, WithdrawnBNB, OperatorUpdated, etc.
+Non-custodial fee router with owner-controlled fee settings:
 
-**Deployed (BSC Testnet):** `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0`
+**User functions (non-custodial — user signs each tx):**
+- `swapExactInput(tokenIn, tokenOut, poolFee, amountIn, amountOutMinimum)` — ERC-20 swap via PancakeSwap V3
+- `swapExactInputBNB(tokenOut, poolFee, amountOutMinimum)` — BNB swap via PancakeSwap V3 (payable)
+- `supplyToVenus(token, vToken, amount)` — Supply ERC-20 to Venus Protocol
+- `redeemFromVenus(vToken, vTokenAmount)` — Redeem from Venus Protocol
+
+**Admin functions (onlyOwner):**
+- `setFeeBps(uint256)` — Update fee (max 100 bps / 1%)
+- `setFeeRecipient(address)` — Update fee collection address
+- `withdrawFees(address token)` — Withdraw collected fees
+- `rescueToken(address token, uint256 amount)` — Emergency token rescue
+
+**Fee mechanism:** 0.10% (10 bps) deducted from input amount before forwarding to protocol. Fee stays in the contract until `withdrawFees()` is called.
+
+**Security:** OpenZeppelin Ownable + ReentrancyGuard + SafeERC20. `forceApprove` for protocol interactions. `deadline = block.timestamp` for swaps.
 
 ---
 
@@ -88,11 +100,11 @@ BSCSCAN_API_KEY=<for-contract-verification>
 
 ```bash
 pnpm install
-npx hardhat compile                                    # Compile contracts
-npx hardhat test                                       # Run tests
-npx hardhat run scripts/deploy.ts --network bscTestnet # Deploy to testnet
-npx hardhat run scripts/deploy.ts --network bscMainnet # Deploy to mainnet
-npx hardhat verify <address> --network bscTestnet      # Verify on BSCScan
+npx hardhat compile                                              # Compile contracts
+npx hardhat test                                                 # Run tests (28 tests)
+npx hardhat run scripts/deploy-router.ts --network bscTestnet    # Deploy to testnet
+npx hardhat run scripts/deploy-router.ts --network bscMainnet    # Deploy to mainnet
+npx hardhat verify <address> --network bscTestnet                # Verify on BSCScan
 ```
 
 **pnpm script shortcuts:**
@@ -107,14 +119,12 @@ pnpm deploy:mainnet
 
 ## Test Coverage
 
-`test/ZikoraVault.test.ts` covers:
-- ERC-20 deposit & withdraw
-- BNB deposit & withdraw
-- Access control (owner-only, operator-only)
-- Operator management
-- Pause/unpause behavior
-- Safety limits (maxTradePercent, maxSlippageBps)
-- Edge cases (zero amount, zero address, insufficient balance)
+`test/ZikoraRouter.test.ts` — 28 tests covering:
+- **Deployment:** correct owner, fee recipient, fee bps, router address
+- **Swaps:** `swapExactInput` (ERC-20), `swapExactInputBNB` (BNB), fee deduction, zero amount revert
+- **Venus Supply:** `supplyToVenus`, fee deduction, zero amount revert
+- **Venus Redeem:** `redeemFromVenus`, vToken transfer, zero amount revert
+- **Admin:** `setFeeBps` (valid + max cap), `setFeeRecipient`, `withdrawFees`, `rescueToken`, access control (onlyOwner reverts)
 
 ---
 
@@ -129,6 +139,15 @@ coverage/
 coverage.json
 .env
 ```
+
+---
+
+## Deployed Addresses
+
+| Network | Address | Fee Recipient |
+|---------|---------|---------------|
+| BSC Testnet (97) | `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
+| BSC Mainnet (56) | Not deployed | — |
 
 ---
 

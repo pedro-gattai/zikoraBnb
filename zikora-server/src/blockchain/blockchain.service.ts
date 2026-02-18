@@ -7,6 +7,7 @@ import PancakeV3QuoterAbi from '../abis/PancakeV3Quoter.json';
 import PancakeV3RouterAbi from '../abis/PancakeV3Router.json';
 import VTokenAbi from '../abis/VToken.json';
 import VenusComptrollerAbi from '../abis/VenusComptroller.json';
+import ZikoraRouterAbi from '../abis/ZikoraRouter.json';
 
 @Injectable()
 export class BlockchainService implements OnModuleInit {
@@ -18,6 +19,7 @@ export class BlockchainService implements OnModuleInit {
   private routerIface: ethers.Interface;
   private erc20Iface: ethers.Interface;
   private vTokenIface: ethers.Interface;
+  private zikoraRouterIface: ethers.Interface;
 
   constructor(private config: ConfigService) {}
 
@@ -33,6 +35,7 @@ export class BlockchainService implements OnModuleInit {
     this.routerIface = new ethers.Interface(PancakeV3RouterAbi);
     this.erc20Iface = new ethers.Interface(ERC20Abi);
     this.vTokenIface = new ethers.Interface(VTokenAbi);
+    this.zikoraRouterIface = new ethers.Interface(ZikoraRouterAbi);
 
     this.logger.log(`Connected to chain ${this.chainId} via ${rpcUrl} (read-only)`);
   }
@@ -105,5 +108,61 @@ export class BlockchainService implements OnModuleInit {
 
   encodeVenusRedeemUnderlying(amount: bigint): string {
     return this.vTokenIface.encodeFunctionData('redeemUnderlying', [amount]);
+  }
+
+  // --- ZikoraRouter encoding helpers ---
+
+  encodeZikoraSwap(params: {
+    tokenIn: string;
+    tokenOut: string;
+    poolFee: number;
+    amountIn: bigint;
+    amountOutMin: bigint;
+  }): string {
+    return this.zikoraRouterIface.encodeFunctionData('swapExactInput', [
+      params.tokenIn,
+      params.tokenOut,
+      params.poolFee,
+      params.amountIn,
+      params.amountOutMin,
+    ]);
+  }
+
+  encodeZikoraSwapBNB(params: {
+    tokenOut: string;
+    poolFee: number;
+    amountOutMin: bigint;
+  }): string {
+    return this.zikoraRouterIface.encodeFunctionData('swapExactInputBNB', [
+      params.tokenOut,
+      params.poolFee,
+      params.amountOutMin,
+    ]);
+  }
+
+  encodeZikoraSupply(
+    vToken: string,
+    underlying: string,
+    amount: bigint,
+  ): string {
+    return this.zikoraRouterIface.encodeFunctionData('supplyToVenus', [
+      vToken,
+      underlying,
+      amount,
+    ]);
+  }
+
+  encodeZikoraRedeem(
+    vToken: string,
+    underlying: string,
+    redeemAmount: bigint,
+    vTokenAmount: bigint,
+  ): string {
+    return this.zikoraRouterIface.encodeFunctionData('redeemFromVenus', [
+      vToken,
+      underlying,
+      redeemAmount,
+      vTokenAmount,
+    ]);
   }
 }

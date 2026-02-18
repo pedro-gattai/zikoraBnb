@@ -1,0 +1,8 @@
+[
+  "function swapExactInput(address tokenIn, address tokenOut, uint24 poolFee, uint256 amountIn, uint256 amountOutMin) external returns (uint256)",
+  "function swapExactInputBNB(address tokenOut, uint24 poolFee, uint256 amountOutMin) external payable returns (uint256)",
+  "function supplyToVenus(address vToken, address underlying, uint256 amount) external",
+  "function redeemFromVenus(address vToken, address underlying, uint256 redeemAmount, uint256 vTokenAmount) external",
+  "function feeBps() view returns (uint256)",
+  "function feeRecipient() view returns (address)"
+]

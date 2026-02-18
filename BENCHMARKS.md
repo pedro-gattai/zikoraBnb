@@ -32,7 +32,7 @@
 - [x] Set up NestJS project structure (modules, services, controllers)
 - [x] Implement `BlockchainService` (ethers.js provider, contract interactions)
 - [x] Implement `MarketDataService` (onchain reads: prices, APYs, pool data)
-- [x] Implement `LLMService` (Google Gemini 2.5 Pro — intent classification + reasoning)
+- [x] Implement `LLMService` (Claude Haiku 4.5 — intent classification + reasoning)
 - [x] Implement `RouterAgent` (intent classification, delegation)
 - [x] Implement `TradingAgent` (PancakeSwap V3 swap execution + reasoning)
 - [x] Implement `YieldAgent` (Venus Protocol supply/redeem + APY analysis)
@@ -67,8 +67,8 @@
 - [ ] Test safety limits (slippage check, balance check) 👤
 
 ### Polish & Deploy (Days 11-12)
-- [ ] UI polish (animations, loading states, error states) 👤
-- [ ] Mobile responsive pass 👤
+- [x] UI polish (animations, loading states, error states)
+- [x] Mobile responsive pass
 - [ ] Deploy landing page to Vercel 👤
 - [ ] Deploy app frontend to Vercel 👤
 - [ ] Deploy backend to Railway/Render 👤
@@ -92,7 +92,7 @@
 |-----------|--------|-------|
 | `zikora-landing-page/` | UI complete + docs page | ~25 files |
 | `zikora-app/` | UI complete (mock data) + signing flow | ~55 files |
-| `zikora-contracts/` | Vault + tests + deploy script (not used in non-custodial arch) | ~10 files |
+| `zikora-contracts/` | ZikoraRouter + tests + deploy (28 tests passing) | ~10 files |
 | `zikora-server/` | Full backend + agents (non-custodial, calldata-only) | ~37 files |
 
 ### 👤 YOU NEED TO DO (requires keys, accounts, manual steps)
@@ -100,7 +100,7 @@
 #### Priority 1 — Connect backend
 1. Fill `zikora-server/.env`:
    - `BSC_RPC_URL=https://bsc-dataseed1.binance.org` (or testnet RPC)
-   - `GEMINI_API_KEY=<your key from aistudio.google.com>`
+   - `ANTHROPIC_API_KEY=<your Anthropic key>`
 2. `cd zikora-server && pnpm start:dev` → runs on port 3001
 
 #### Priority 2 — Connect frontend
@@ -192,4 +192,43 @@
 - Updated docs (CLAUDE.md, BENCHMARKS.md, plan.md): corrected all LLM references to Google Gemini 2.5 Pro
 - Updated plan.md env vars section and cost estimates (Gemini = free)
 - Expanded `use-of-ai.md` with detailed AI build log for hackathon submission
-- **Next steps:** obtain Gemini API key, configure .env, test locally, deploy, record demo, submit
+- **Next steps:** configure .env, test locally, deploy, record demo, submit
+
+### Feb 18, 2026
+- UI polish complete (animations, loading states, mobile responsive)
+- **ZikoraRouter contract:** non-custodial fee router (0.10% / 10 bps) for PancakeSwap V3 + Venus Protocol
+  - `swapExactInput()`, `swapExactInputBNB()`, `supplyToVenus()`, `redeemFromVenus()`
+  - Admin: `setFeeBps()`, `setFeeRecipient()`, `withdrawFees()`, `rescueToken()`
+  - OZ 5.x (Ownable, ReentrancyGuard, SafeERC20), `forceApprove`, deadline=`block.timestamp`
+  - Mock contracts + full test suite
+  - Deploy script for BSC Testnet
+- **Backend integration:** TradingAgent + YieldAgent now route through ZikoraRouter
+  - 4 new encode methods in BlockchainService
+  - Quote adjustment for 0.10% fee (amountIn * 9990 / 10000)
+  - vToken exchange rate calculation for redeem
+- **LLM migration:** Google Gemini 2.5 Pro → Claude Haiku 4.5 ($0.003/msg)
+  - @google/generative-ai → @anthropic-ai/sdk
+  - GEMINI_API_KEY → ANTHROPIC_API_KEY
+
+### Smart Contracts — ZikoraRouter
+- [x] `ZikoraRouter.sol` — multi-protocol fee router (0.10% fee)
+- [x] `IWBNB.sol` interface
+- [x] `IPancakeV3Router.sol` — add `deadline` field
+- [x] Mock contracts (`MockPancakeRouter.sol`, `MockVToken.sol`)
+- [x] `ZikoraRouter.test.ts` — comprehensive test suite
+- [x] `deploy-router.ts` — deployment script
+- [x] Deploy to BSC Testnet ✅ (`0x57491f59f41121f907e3820c6e57080D9BCaF5a9`)
+
+### Backend — ZikoraRouter Integration
+- [x] `ZikoraRouter.json` ABI for ethers.js encoding
+- [x] `addresses.ts` — add `zikoraRouter` placeholder
+- [x] `blockchain.service.ts` — 4 new encode methods
+- [x] `trading.agent.ts` — route swaps via ZikoraRouter
+- [x] `yield.agent.ts` — route supply/redeem via ZikoraRouter
+- [x] `market-data.service.ts` — add `getVTokenExchangeRate()`
+
+### LLM Migration
+- [x] `llm.service.ts` — Gemini → Claude Haiku 4.5
+- [x] `package.json` — @google/generative-ai → @anthropic-ai/sdk
+- [x] **ZikoraRouter deployed to BSC Testnet** — `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` (fee recipient: `0xD776060a35c0b91b2E456e92180a184f50e99324`)
+- [x] Updated `addresses.ts` with deployed ZikoraRouter address (chain 97)

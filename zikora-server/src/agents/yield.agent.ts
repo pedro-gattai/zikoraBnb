@@ -7,6 +7,8 @@ import { TxAction, TxStep } from '../store/store.service';
 import { resolveToken, getTokens } from '../config/tokens';
 import { AgentResponse } from './router.agent';
 
+const ZIKORA_FEE_BPS = 10; // 0.10% protocol fee
+
 @Injectable()
 export class YieldAgent {
   private readonly logger = new Logger(YieldAgent.name);
@@ -102,6 +104,7 @@ export class YieldAgent {
 
     try {
       const amountWei = ethers.parseUnits(amount, token.decimals);
+      const zikoraRouter = this.blockchain.addresses.zikoraRouter;
 
       // Check user wallet balance
       const balance = await this.marketData.getTokenBalance(
@@ -119,34 +122,41 @@ export class YieldAgent {
       }
 
       const apy = await this.marketData.getVenusAPY(token.vToken);
+      const feeAmount = (amountWei * BigInt(ZIKORA_FEE_BPS)) / 10000n;
+      const netAmount = amountWei - feeAmount;
+      const feeFormatted = ethers.formatUnits(feeAmount, token.decimals);
 
       // Build TxAction steps
       const steps: TxStep[] = [];
 
-      // Step 1: Approve vToken to spend user's tokens
+      // Step 1: Approve ZikoraRouter to spend user's tokens
       const allowance = await this.blockchain.getAllowance(
         token.address,
         wallet,
-        token.vToken,
+        zikoraRouter,
       );
       if (allowance < amountWei) {
         steps.push({
           to: token.address,
-          data: this.blockchain.encodeApprove(token.vToken, amountWei),
+          data: this.blockchain.encodeApprove(zikoraRouter, amountWei),
           value: '0',
-          description: `Approve ${amount} ${tokenSymbol} for Venus Protocol`,
+          description: `Approve ${amount} ${tokenSymbol} for Zikora Router`,
         });
       }
 
-      // Step 2: Mint vTokens (supply)
+      // Step 2: Supply via ZikoraRouter
       steps.push({
-        to: token.vToken,
-        data: this.blockchain.encodeVenusMint(amountWei),
+        to: zikoraRouter,
+        data: this.blockchain.encodeZikoraSupply(
+          token.vToken,
+          token.address,
+          amountWei,
+        ),
         value: '0',
-        description: `Supply ${amount} ${tokenSymbol} to Venus (${apy.toFixed(2)}% APY)`,
+        description: `Supply ${amount} ${tokenSymbol} to Venus via Zikora (${apy.toFixed(2)}% APY)`,
       });
 
-      const reasoning = `Supplying ${amount} ${tokenSymbol} to Venus Protocol.\nCurrent APY: ${apy.toFixed(2)}%\nWallet balance sufficient. Transaction prepared for signing.`;
+      const reasoning = `Supplying ${amount} ${tokenSymbol} to Venus Protocol via Zikora Router.\nProtocol fee: 0.10% (${feeFormatted} ${tokenSymbol})\nNet supply: ${ethers.formatUnits(netAmount, token.decimals)} ${tokenSymbol}\nCurrent APY: ${apy.toFixed(2)}%\nWallet balance sufficient. Transaction prepared for signing.`;
 
       const txAction: TxAction = {
         type: 'supply',
@@ -155,13 +165,13 @@ export class YieldAgent {
         details: {
           fromToken: tokenSymbol,
           fromAmount: amount,
-          protocol: 'Venus Protocol',
+          protocol: 'Zikora Router (Venus Protocol)',
         },
       };
 
       return {
         role: 'assistant',
-        content: `Ready to supply **${amount} ${tokenSymbol}** to Venus Protocol at **${apy.toFixed(2)}% APY**.\n\nPlease sign the transaction to proceed.`,
+        content: `Ready to supply **${amount} ${tokenSymbol}** to Venus Protocol at **${apy.toFixed(2)}% APY** via Zikora Router.\n\nProtocol fee: 0.10% (${feeFormatted} ${tokenSymbol})\n\nPlease sign the transaction to proceed.`,
         agent: 'yield',
         reasoning,
         txAction,
@@ -208,6 +218,7 @@ export class YieldAgent {
 
     try {
       const amountWei = ethers.parseUnits(amount, token.decimals);
+      const zikoraRouter = this.blockchain.addresses.zikoraRouter;
 
       // Check Venus position
       const { underlyingBalance } = await this.marketData.getVenusBalance(
@@ -225,17 +236,47 @@ export class YieldAgent {
         };
       }
 
-      const reasoning = `Redeeming ${amount} ${tokenSymbol} from Venus Protocol.\nCurrent position: ${ethers.formatUnits(underlyingBalance, token.decimals)} ${tokenSymbol}\nTransaction prepared for signing.`;
+      // Calculate vToken amount needed (with 1% buffer for exchange rate changes)
+      const exchangeRate = await this.marketData.getVTokenExchangeRate(token.vToken);
+      // vTokenAmount = (redeemAmount * 1e18) / exchangeRate, with 1% buffer
+      const vTokenAmount = (amountWei * ethers.WeiPerEther * 101n) / (exchangeRate * 100n);
 
-      // Build TxAction — redeem doesn't need approval
-      const steps: TxStep[] = [
-        {
+      const feeAmount = (amountWei * BigInt(ZIKORA_FEE_BPS)) / 10000n;
+      const userReceives = amountWei - feeAmount;
+      const feeFormatted = ethers.formatUnits(feeAmount, token.decimals);
+
+      const reasoning = `Redeeming ${amount} ${tokenSymbol} from Venus Protocol via Zikora Router.\nProtocol fee: 0.10% (${feeFormatted} ${tokenSymbol})\nYou'll receive: ${ethers.formatUnits(userReceives, token.decimals)} ${tokenSymbol}\nCurrent position: ${ethers.formatUnits(underlyingBalance, token.decimals)} ${tokenSymbol}\nTransaction prepared for signing.`;
+
+      // Build TxAction steps
+      const steps: TxStep[] = [];
+
+      // Step 1: Approve ZikoraRouter to pull vTokens
+      const vTokenAllowance = await this.blockchain.getAllowance(
+        token.vToken,
+        wallet,
+        zikoraRouter,
+      );
+      if (vTokenAllowance < vTokenAmount) {
+        steps.push({
           to: token.vToken,
-          data: this.blockchain.encodeVenusRedeemUnderlying(amountWei),
+          data: this.blockchain.encodeApprove(zikoraRouter, vTokenAmount),
           value: '0',
-          description: `Redeem ${amount} ${tokenSymbol} from Venus`,
-        },
-      ];
+          description: `Approve vTokens for Zikora Router`,
+        });
+      }
+
+      // Step 2: Redeem via ZikoraRouter
+      steps.push({
+        to: zikoraRouter,
+        data: this.blockchain.encodeZikoraRedeem(
+          token.vToken,
+          token.address,
+          amountWei,
+          vTokenAmount,
+        ),
+        value: '0',
+        description: `Redeem ${amount} ${tokenSymbol} from Venus via Zikora`,
+      });
 
       const txAction: TxAction = {
         type: 'redeem',
@@ -243,14 +284,14 @@ export class YieldAgent {
         steps,
         details: {
           toToken: tokenSymbol,
-          toAmount: amount,
-          protocol: 'Venus Protocol',
+          toAmount: ethers.formatUnits(userReceives, token.decimals),
+          protocol: 'Zikora Router (Venus Protocol)',
         },
       };
 
       return {
         role: 'assistant',
-        content: `Ready to redeem **${amount} ${tokenSymbol}** from Venus Protocol.\n\nPlease sign the transaction to proceed.`,
+        content: `Ready to redeem **${amount} ${tokenSymbol}** from Venus Protocol via Zikora Router.\n\nProtocol fee: 0.10% (${feeFormatted} ${tokenSymbol})\nYou'll receive: ~${ethers.formatUnits(userReceives, token.decimals)} ${tokenSymbol}\n\nPlease sign the transaction to proceed.`,
         agent: 'yield',
         reasoning,
         txAction,

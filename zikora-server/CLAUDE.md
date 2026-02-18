@@ -10,7 +10,7 @@ NestJS backend that powers the Zikora DeFAI platform. Receives natural language 
 
 - **NestJS 10** + **TypeScript** (ES2021 target, commonjs)
 - **ethers.js 6** — read-only blockchain interactions
-- **@google/generative-ai 0.21** — Google Gemini 2.5 Pro
+- **@anthropic-ai/sdk** — Claude Haiku 4.5
 - **@nestjs/config** — environment variables
 - **@nestjs/throttler** — rate limiting (20 req / 10 min on /chat)
 
@@ -31,14 +31,14 @@ src/
 │   ├── PancakeV3Quoter.json     # quoteExactInputSingle
 │   ├── VToken.json              # mint, redeemUnderlying, supplyRatePerBlock
 │   ├── VenusComptroller.json
-│   └── ZikoraVault.json         # Legacy — not used in current architecture
+│   └── ZikoraRouter.json        # Fee router ABI
 ├── blockchain/                  # @Global() — ethers provider + calldata encoding
 │   ├── blockchain.service.ts
 │   └── blockchain.module.ts
 ├── market-data/                 # Price quotes, balances, APYs (in-memory cache)
 │   ├── market-data.service.ts
 │   └── market-data.module.ts
-├── llm/                         # @Global() — Google Gemini integration
+├── llm/                         # @Global() — Anthropic Claude integration
 │   ├── llm.service.ts           # classifyIntent(), generateResponse()
 │   └── llm.module.ts
 ├── agents/                      # AI agent pipeline
@@ -73,7 +73,7 @@ User message (POST /chat)
     ↓
 RouterAgent.handleMessage()
     ↓
-LlmService.classifyIntent()  →  Gemini 2.5 Pro (256 tokens max)
+LlmService.classifyIntent()  →  Claude Haiku 4.5 (256 tokens max)
     ↓
 Switch: 'trading' | 'yield' | 'analytics' | 'general'
     ↓
@@ -113,7 +113,7 @@ AgentResponse { content, agent, txAction?, reasoning? }
 **@Global() modules** (available everywhere):
 - `StoreModule` — in-memory Maps (transactions, chatHistory)
 - `BlockchainModule` — ethers.js provider, contract interfaces, calldata encoding
-- `LlmModule` — Google Gemini integration
+- `LlmModule` — Anthropic Claude integration
 
 **Non-global modules:**
 - `MarketDataModule` — quotes, balances, prices, APYs (60s/5min cache)
@@ -137,8 +137,8 @@ AgentResponse { content, agent, txAction?, reasoning? }
 
 ## LLM Integration
 
-**Model:** Google Gemini 2.5 Pro (`gemini-2.5-pro`)
-**Env var:** `GEMINI_API_KEY`
+**Model:** Claude Haiku 4.5 (`claude-haiku-4-5-20251001`)
+**Env var:** `ANTHROPIC_API_KEY`
 
 Two methods:
 1. `classifyIntent(message)` → `{ agent, params: { fromToken, toToken, amount, action } }`
@@ -165,7 +165,7 @@ Regex fallback if API is unavailable.
 # .env.example
 PORT=3001
 BSC_RPC_URL=https://data-seed-prebsc-1-s1.bnbchain.org:8545
-GEMINI_API_KEY=your-key-here
+ANTHROPIC_API_KEY=your-key-here
 CHAIN_ID=97
 CORS_ORIGINS=https://zikora.vercel.app,https://zikora-app.vercel.app
 ```

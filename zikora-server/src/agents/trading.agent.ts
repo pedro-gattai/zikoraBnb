@@ -7,6 +7,7 @@ import { TxAction, TxStep } from '../store/store.service';
 import { resolveToken } from '../config/tokens';
 import { AgentResponse } from './router.agent';
 const DEFAULT_SLIPPAGE_BPS = 100; // 1%
+const ZIKORA_FEE_BPS = 10; // 0.10% protocol fee
 
 @Injectable()
 export class TradingAgent {
@@ -49,7 +50,7 @@ export class TradingAgent {
 
     const amountIn = ethers.parseUnits(amount, fromToken.decimals);
     const isBNBIn = fromSymbol === 'BNB';
-    const routerAddress = this.blockchain.addresses.pancakeRouter;
+    const zikoraRouter = this.blockchain.addresses.zikoraRouter;
 
     try {
       // Check user's wallet balance
@@ -73,16 +74,17 @@ export class TradingAgent {
         };
       }
 
-      // Get quote
+      // Get quote — adjust for ZikoraRouter fee (0.10%)
       const wbnb = this.blockchain.addresses.WBNB;
       const tokenInAddr = isBNBIn ? wbnb : fromToken.address;
       const tokenOutAddr =
         toSymbol === 'BNB' ? wbnb : toToken.address;
 
+      const netAmountIn = (amountIn * 9990n) / 10000n; // amount after 0.10% fee
       const quoteOut = await this.marketData.getQuote(
         tokenInAddr,
         tokenOutAddr,
-        amountIn,
+        netAmountIn,
       );
 
       if (quoteOut === 0n) {
@@ -98,45 +100,58 @@ export class TradingAgent {
         quoteOut - (quoteOut * BigInt(DEFAULT_SLIPPAGE_BPS)) / 10000n;
       const expectedOut = ethers.formatUnits(quoteOut, toToken.decimals);
       const minOut = ethers.formatUnits(amountOutMin, toToken.decimals);
+      const feeAmount = ethers.formatUnits(amountIn - netAmountIn, fromToken.decimals);
 
       // Build TxAction steps
       const steps: TxStep[] = [];
 
-      // Step 1: Approve (if not BNB native and allowance insufficient)
+      // Step 1: Approve ZikoraRouter (if not BNB native and allowance insufficient)
       if (!isBNBIn) {
         const allowance = await this.blockchain.getAllowance(
           fromToken.address,
           wallet,
-          routerAddress,
+          zikoraRouter,
         );
         if (allowance < amountIn) {
           steps.push({
             to: fromToken.address,
-            data: this.blockchain.encodeApprove(routerAddress, amountIn),
+            data: this.blockchain.encodeApprove(zikoraRouter, amountIn),
             value: '0',
-            description: `Approve ${amount} ${fromSymbol} for PancakeSwap Router`,
+            description: `Approve ${amount} ${fromSymbol} for Zikora Router`,
           });
         }
       }
 
-      // Step 2: Swap
-      const swapData = this.blockchain.encodeSwap({
-        tokenIn: tokenInAddr,
-        tokenOut: tokenOutAddr,
-        fee: 2500,
-        recipient: wallet,
-        amountIn,
-        amountOutMinimum: amountOutMin,
-      });
+      // Step 2: Swap via ZikoraRouter
+      if (isBNBIn) {
+        const swapData = this.blockchain.encodeZikoraSwapBNB({
+          tokenOut: tokenOutAddr,
+          poolFee: 2500,
+          amountOutMin: amountOutMin,
+        });
+        steps.push({
+          to: zikoraRouter,
+          data: swapData,
+          value: amountIn.toString(),
+          description: `Swap ${amount} ${fromSymbol} for ~${Number(expectedOut).toFixed(4)} ${toSymbol} via Zikora`,
+        });
+      } else {
+        const swapData = this.blockchain.encodeZikoraSwap({
+          tokenIn: tokenInAddr,
+          tokenOut: tokenOutAddr,
+          poolFee: 2500,
+          amountIn,
+          amountOutMin: amountOutMin,
+        });
+        steps.push({
+          to: zikoraRouter,
+          data: swapData,
+          value: '0',
+          description: `Swap ${amount} ${fromSymbol} for ~${Number(expectedOut).toFixed(4)} ${toSymbol} via Zikora`,
+        });
+      }
 
-      steps.push({
-        to: routerAddress,
-        data: swapData,
-        value: isBNBIn ? amountIn.toString() : '0',
-        description: `Swap ${amount} ${fromSymbol} for ~${Number(expectedOut).toFixed(4)} ${toSymbol}`,
-      });
-
-      const reasoning = `Swap ${amount} ${fromSymbol} → ${toSymbol} via PancakeSwap V3.\nExpected output: ${expectedOut} ${toSymbol}\nMinimum output (${DEFAULT_SLIPPAGE_BPS / 100}% slippage): ${minOut} ${toSymbol}\nWallet balance sufficient. Transaction prepared for signing.`;
+      const reasoning = `Swap ${amount} ${fromSymbol} → ${toSymbol} via Zikora Router (PancakeSwap V3).\nProtocol fee: 0.10% (${feeAmount} ${fromSymbol})\nExpected output: ${expectedOut} ${toSymbol}\nMinimum output (${DEFAULT_SLIPPAGE_BPS / 100}% slippage): ${minOut} ${toSymbol}\nWallet balance sufficient. Transaction prepared for signing.`;
 
       const txAction: TxAction = {
         type: 'swap',
@@ -147,14 +162,14 @@ export class TradingAgent {
           toToken: toSymbol,
           fromAmount: amount,
           toAmount: Number(expectedOut).toFixed(4),
-          protocol: 'PancakeSwap V3',
+          protocol: 'Zikora Router (PancakeSwap V3)',
           slippageBps: DEFAULT_SLIPPAGE_BPS,
         },
       };
 
       return {
         role: 'assistant',
-        content: `Ready to swap **${amount} ${fromSymbol}** for ~**${Number(expectedOut).toFixed(4)} ${toSymbol}** via PancakeSwap V3.\n\nMinimum output: ${minOut} ${toSymbol} (${DEFAULT_SLIPPAGE_BPS / 100}% max slippage)\n\nPlease sign the transaction to proceed.`,
+        content: `Ready to swap **${amount} ${fromSymbol}** for ~**${Number(expectedOut).toFixed(4)} ${toSymbol}** via Zikora Router.\n\nProtocol fee: 0.10% (${feeAmount} ${fromSymbol})\nMinimum output: ${minOut} ${toSymbol} (${DEFAULT_SLIPPAGE_BPS / 100}% max slippage)\n\nPlease sign the transaction to proceed.`,
         agent: 'trading',
         reasoning,
         txAction,

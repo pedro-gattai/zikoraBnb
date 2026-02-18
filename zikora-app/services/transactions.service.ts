@@ -1,4 +1,4 @@
-import { apiFetch, isUsingMock } from './api'
+import { apiFetch } from './api'
 
 export async function reportTransaction(body: {
   walletAddress: string
@@ -15,7 +15,6 @@ export async function reportTransaction(body: {
   }
   gasUsed?: string
 }): Promise<void> {
-  if (isUsingMock) return
   await apiFetch('/transactions', {
     method: 'POST',
     body: JSON.stringify(body),

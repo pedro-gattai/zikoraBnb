@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { GoogleGenerativeAI, GenerativeModel, Content } from '@google/generative-ai';
+import Anthropic from '@anthropic-ai/sdk';
 
 export interface ClassifiedIntent {
   agent: 'trading' | 'yield' | 'analytics' | 'general';
@@ -11,24 +11,26 @@ export interface ClassifiedIntent {
 @Injectable()
 export class LlmService {
   private readonly logger = new Logger(LlmService.name);
-  private model: GenerativeModel | null = null;
+  private client: Anthropic | null = null;
+  private readonly model = 'claude-haiku-4-5-20251001';
 
   constructor(private config: ConfigService) {
-    const apiKey = this.config.get<string>('GEMINI_API_KEY');
+    const apiKey = this.config.get<string>('ANTHROPIC_API_KEY');
     if (apiKey) {
-      const genAI = new GoogleGenerativeAI(apiKey);
-      this.model = genAI.getGenerativeModel({ model: 'gemini-2.5-pro' });
+      this.client = new Anthropic({ apiKey });
     } else {
-      this.logger.warn('GEMINI_API_KEY not set — LLM will use fallback');
+      this.logger.warn('ANTHROPIC_API_KEY not set — LLM will use fallback');
     }
   }
 
   async classifyIntent(message: string): Promise<ClassifiedIntent> {
-    if (!this.model) return this.fallbackClassify(message);
+    if (!this.client) return this.fallbackClassify(message);
 
     try {
-      const result = await this.model.generateContent({
-        systemInstruction: `You are the Zikora router. Classify the user's DeFi intent into JSON.
+      const response = await this.client.messages.create({
+        model: this.model,
+        max_tokens: 256,
+        system: `You are the Zikora router. Classify the user's DeFi intent into JSON.
 Return ONLY valid JSON with this schema:
 {
   "agent": "trading" | "yield" | "analytics" | "general",
@@ -42,11 +44,11 @@ Rules:
 - "analytics": portfolio questions, balance checks, PnL, recommendations
 - "general": greetings, help, or anything that doesn't fit the above
 - Include relevant params extracted from the message. Omit params that aren't mentioned.`,
-        contents: [{ role: 'user', parts: [{ text: message }] }],
-        generationConfig: { maxOutputTokens: 256 },
+        messages: [{ role: 'user', content: message }],
       });
 
-      const text = result.response.text();
+      const text =
+        response.content[0].type === 'text' ? response.content[0].text : '';
       const jsonMatch = text.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         return JSON.parse(jsonMatch[0]) as ClassifiedIntent;
@@ -63,28 +65,31 @@ Rules:
     userMessage: string,
     context?: string,
   ): Promise<string> {
-    if (!this.model) {
+    if (!this.client) {
       return 'I understand your request. Let me process that for you.';
     }
 
     try {
-      const contents: Content[] = [];
+      const messages: Anthropic.MessageParam[] = [];
       if (context) {
-        contents.push({ role: 'user', parts: [{ text: context }] });
-        contents.push({
-          role: 'model',
-          parts: [{ text: 'I have the context. What would you like to know?' }],
+        messages.push({ role: 'user', content: context });
+        messages.push({
+          role: 'assistant',
+          content: 'I have the context. What would you like to know?',
         });
       }
-      contents.push({ role: 'user', parts: [{ text: userMessage }] });
+      messages.push({ role: 'user', content: userMessage });
 
-      const result = await this.model.generateContent({
-        systemInstruction: systemPrompt,
-        contents,
-        generationConfig: { maxOutputTokens: 1024 },
+      const response = await this.client.messages.create({
+        model: this.model,
+        max_tokens: 1024,
+        system: systemPrompt,
+        messages,
       });
 
-      return result.response.text();
+      return response.content[0].type === 'text'
+        ? response.content[0].text
+        : 'I encountered an issue generating a response. Please try again.';
     } catch (err) {
       this.logger.error('generateResponse failed', err);
       return 'I encountered an issue generating a response. Please try again.';

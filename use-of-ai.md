@@ -55,7 +55,7 @@ This was the most intensive AI-assisted phase. Claude Code built the entire Nest
 
 - **BlockchainService:** ethers.js v6 provider, contract factories for PancakeSwap V3 Router/Quoter/Factory and Venus vTokens/Comptroller, calldata encoding helpers
 - **MarketDataService:** onchain price quotes via PancakeSwap V3 QuoterV2, Venus APY calculation from `supplyRatePerBlock()`, token balances, TTL cache (60s prices, 5min APY)
-- **LLMService:** Integration with Google Gemini 2.5 Pro for intent classification and reasoning generation. Uses structured JSON output for reliable intent parsing
+- **LLMService:** Integration with Claude Haiku 4.5 (Anthropic) for intent classification and reasoning generation. Uses structured JSON output for reliable intent parsing
 - **RouterAgent:** Receives user message, calls LLM to classify intent (SWAP, YIELD, ANALYTICS, GENERAL), extracts parameters (tokens, amounts, actions), delegates to the right specialized agent
 - **TradingAgent:** Prepares PancakeSwap V3 swap transactions — checks wallet balance, gets price quote, calculates slippage, builds approve + swap calldata steps
 - **YieldAgent:** Handles Venus Protocol supply/redeem — checks balances, fetches APY, builds approve + mint/redeemUnderlying calldata
@@ -89,7 +89,7 @@ Full codebase review identified 3 bugs that Claude Code then fixed:
 
 1. **Token address mismatch (critical):** `tokens.ts` had hardcoded mainnet addresses but `CHAIN_ID=97` (testnet) in `.env.example`. On testnet, all balance checks would return 0. Fix: refactored to `getTokens(chainId)` function that pulls addresses from the chain-aware `addresses.ts`
 2. **CORS missing production URLs:** Added `CORS_ORIGINS` env var support for comma-separated custom domains
-3. **Documentation inconsistency:** Code uses Google Gemini 2.5 Pro but docs said "Claude Sonnet 4.5". Corrected all references across CLAUDE.md, BENCHMARKS.md, and plan.md
+3. **Documentation inconsistency:** LLM references were out of sync across docs. Corrected all references to match the current provider (Claude Haiku 4.5)
 
 Also fixed a hardcoded WBNB address in `trading.agent.ts` and added `BlockchainService` dependency to `AnalyticsAgent` for proper chainId access.
 
@@ -102,7 +102,7 @@ Also fixed a hardcoded WBNB address in `trading.agent.ts` and added `BlockchainS
 | **Claude** (claude.ai) | Ideation, architecture, brand design, planning | ~10 conversations |
 | **Claude Code** (CLI in VS Code) | All code generation, debugging, refactoring | Primary development tool |
 | **V0** (Vercel AI) | Landing page initial generation | 1 session, then refined with Claude Code |
-| **Google Gemini 2.5 Pro** | Runtime LLM in the product itself | Intent classification + reasoning for DeFi agents |
+| **Claude Haiku 4.5** | Runtime LLM in the product itself | Intent classification + reasoning for DeFi agents |
 
 ---
 
@@ -114,4 +114,4 @@ Also fixed a hardcoded WBNB address in `trading.agent.ts` and added `BlockchainS
 
 3. **AI catches its own bugs:** The code review phase showed AI can identify bugs in AI-generated code — the token address mismatch was a subtle issue that would have caused silent failures on testnet.
 
-4. **Documentation drift is real:** Even with AI, docs and code can diverge. The LLM provider changed during development (Claude → Gemini for cost reasons) but docs weren't updated until the review phase.
+4. **Documentation drift is real:** Even with AI, docs and code can diverge. The LLM provider changed during development (Claude → Gemini → Claude Haiku) and docs needed multiple passes to stay in sync.

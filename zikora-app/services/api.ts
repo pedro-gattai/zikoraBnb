@@ -1,10 +1,8 @@
 const API_URL = process.env.NEXT_PUBLIC_API_URL
 
-export const isUsingMock = !API_URL
-
 export async function apiFetch<T>(path: string, options?: RequestInit): Promise<T> {
   if (!API_URL) {
-    throw new Error('API_URL not configured — using mock data')
+    throw new Error('NEXT_PUBLIC_API_URL is not configured')
   }
 
   const res = await fetch(`${API_URL}${path}`, {

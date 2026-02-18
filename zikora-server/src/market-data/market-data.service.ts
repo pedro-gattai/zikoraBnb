@@ -143,6 +143,16 @@ export class MarketDataService {
     }
   }
 
+  async getVTokenExchangeRate(vTokenAddress: string): Promise<bigint> {
+    try {
+      const vToken = this.blockchain.getVToken(vTokenAddress);
+      return await vToken.exchangeRateStored();
+    } catch {
+      // Default exchange rate: 2e16 (0.02 in 18 decimals) — Venus initial rate
+      return 200000000000000n;
+    }
+  }
+
   async getQuote(
     tokenIn: string,
     tokenOut: string,
