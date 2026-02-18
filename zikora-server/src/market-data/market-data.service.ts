@@ -207,21 +207,27 @@ export class MarketDataService {
     tokenIn: string,
     tokenOut: string,
     amountIn: bigint,
-    fee = 2500,
-  ): Promise<bigint> {
-    try {
-      const quoter = this.blockchain.getQuoter();
-      const result = await quoter.quoteExactInputSingle.staticCall({
-        tokenIn,
-        tokenOut,
-        amountIn,
-        fee,
-        sqrtPriceLimitX96: 0,
-      });
-      return result.amountOut;
-    } catch {
-      return 0n;
+    fee?: number,
+  ): Promise<{ amountOut: bigint; fee: number }> {
+    const feeTiers = fee ? [fee] : [500, 2500, 100];
+    for (const tier of feeTiers) {
+      try {
+        const quoter = this.blockchain.getQuoter();
+        const result = await quoter.quoteExactInputSingle.staticCall({
+          tokenIn,
+          tokenOut,
+          amountIn,
+          fee: tier,
+          sqrtPriceLimitX96: 0,
+        });
+        if (result.amountOut > 0n) {
+          return { amountOut: result.amountOut, fee: tier };
+        }
+      } catch {
+        continue;
+      }
     }
+    return { amountOut: 0n, fee: 500 };
   }
 
   private getFromCache<T>(key: string): T | undefined {

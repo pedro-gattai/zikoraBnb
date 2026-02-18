@@ -81,11 +81,8 @@ export class TradingAgent {
         toSymbol === 'BNB' ? wbnb : toToken.address;
 
       const netAmountIn = (amountIn * 9990n) / 10000n; // amount after 0.10% fee
-      const quoteOut = await this.marketData.getQuote(
-        tokenInAddr,
-        tokenOutAddr,
-        netAmountIn,
-      );
+      const { amountOut: quoteOut, fee: bestFee } =
+        await this.marketData.getQuote(tokenInAddr, tokenOutAddr, netAmountIn);
 
       if (quoteOut === 0n) {
         return {
@@ -126,7 +123,7 @@ export class TradingAgent {
       if (isBNBIn) {
         const swapData = this.blockchain.encodeZikoraSwapBNB({
           tokenOut: tokenOutAddr,
-          poolFee: 2500,
+          poolFee: bestFee,
           amountOutMin: amountOutMin,
         });
         steps.push({
@@ -139,7 +136,7 @@ export class TradingAgent {
         const swapData = this.blockchain.encodeZikoraSwap({
           tokenIn: tokenInAddr,
           tokenOut: tokenOutAddr,
-          poolFee: 2500,
+          poolFee: bestFee,
           amountIn,
           amountOutMin: amountOutMin,
         });
