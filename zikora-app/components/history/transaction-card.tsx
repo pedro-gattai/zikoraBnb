@@ -24,9 +24,9 @@ const TYPE_ICONS: Record<string, React.ComponentType<{ className?: string }>> = 
 }
 
 const STATUS_CONFIG = {
-  success: { icon: CheckCircle2, color: 'text-green-500' },
-  failed: { icon: XCircle, color: 'text-red-500' },
-  pending: { icon: Clock, color: 'text-yellow-500' },
+  success: { icon: CheckCircle2, color: 'text-[hsl(var(--success))]' },
+  failed: { icon: XCircle, color: 'text-destructive' },
+  pending: { icon: Clock, color: 'text-[hsl(var(--warning))]' },
 }
 
 export function TransactionCard({ tx }: { tx: Transaction }) {
@@ -41,23 +41,23 @@ export function TransactionCard({ tx }: { tx: Transaction }) {
           <TypeIcon className="h-4 w-4 text-foreground" />
         </div>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <StatusIcon className={cn('h-3.5 w-3.5', status.color)} />
-            <span className="text-sm font-medium truncate">{tx.summary}</span>
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <StatusIcon className={cn('h-3.5 w-3.5 shrink-0', status.color)} />
+            <span className="min-w-0 truncate text-sm font-medium">{tx.summary}</span>
           </div>
           <div className="mt-1 flex flex-wrap items-center gap-2">
             <AgentBadge agent={tx.agent} />
             <TxHashLink hash={tx.hash} />
           </div>
           {tx.details.protocol && (
-            <p className="mt-1 text-xs text-muted-foreground">
+            <p className="mt-1 truncate text-xs text-muted-foreground">
               via {tx.details.protocol}
             </p>
           )}
         </div>
 
-        <div className="text-right shrink-0">
+        <div className="shrink-0 text-right">
           <p className="text-xs text-muted-foreground">
             {tx.timestamp.toLocaleDateString('en-US', {
               month: 'short',

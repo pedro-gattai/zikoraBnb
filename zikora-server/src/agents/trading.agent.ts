@@ -6,8 +6,6 @@ import { LlmService, ClassifiedIntent } from '../llm/llm.service';
 import { TxAction, TxStep } from '../store/store.service';
 import { resolveToken } from '../config/tokens';
 import { AgentResponse } from './router.agent';
-
-const WBNB = '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c';
 const DEFAULT_SLIPPAGE_BPS = 100; // 1%
 
 @Injectable()
@@ -38,8 +36,8 @@ export class TradingAgent {
       return { role: 'assistant', content, agent: 'trading' };
     }
 
-    const fromToken = resolveToken(fromSymbol);
-    const toToken = resolveToken(toSymbol);
+    const fromToken = resolveToken(fromSymbol, this.blockchain.chainId);
+    const toToken = resolveToken(toSymbol, this.blockchain.chainId);
 
     if (!fromToken || !toToken) {
       return {
@@ -76,9 +74,10 @@ export class TradingAgent {
       }
 
       // Get quote
-      const tokenInAddr = isBNBIn ? WBNB : fromToken.address;
+      const wbnb = this.blockchain.addresses.WBNB;
+      const tokenInAddr = isBNBIn ? wbnb : fromToken.address;
       const tokenOutAddr =
-        toSymbol === 'BNB' ? WBNB : toToken.address;
+        toSymbol === 'BNB' ? wbnb : toToken.address;
 
       const quoteOut = await this.marketData.getQuote(
         tokenInAddr,

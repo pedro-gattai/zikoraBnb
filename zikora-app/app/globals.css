@@ -127,3 +127,54 @@ html {
   animation: dotPulse 1.4s infinite ease-in-out;
   animation-delay: 0.4s;
 }
+
+/* Shimmer effect for skeleton loading states */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    hsl(var(--secondary)) 25%,
+    hsl(var(--secondary) / 0.5) 50%,
+    hsl(var(--secondary)) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Success pulse animation for confirmed transactions */
+@keyframes successPulse {
+  0% {
+    box-shadow: 0 0 0 0 hsl(var(--success) / 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 8px hsl(var(--success) / 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 hsl(var(--success) / 0);
+  }
+}
+
+.animate-success-pulse {
+  animation: successPulse 1.5s ease-out 1;
+}
+
+/* Interactive button hover/active states */
+.btn-interactive {
+  transition: transform 150ms ease;
+}
+
+.btn-interactive:hover {
+  transform: scale(1.02);
+}
+
+.btn-interactive:active {
+  transform: scale(0.98);
+}

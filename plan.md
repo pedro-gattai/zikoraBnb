@@ -114,7 +114,7 @@ Transaction confirmed on BSC
 | Smart Contracts | Solidity 0.8.20 + Hardhat |
 | Frontend | Next.js 14 + TypeScript + Tailwind + wagmi + RainbowKit |
 | Backend | NestJS + TypeScript |
-| AI/LLM | Anthropic Claude API (Sonnet 4.5) |
+| AI/LLM | Google Gemini 2.5 Pro |
 | Blockchain | BSC Mainnet/Testnet (gas ~$0.001/tx) |
 | Hosting | Vercel (front) + Railway (back) |
 
@@ -452,17 +452,17 @@ zikora/
 ### Prerequisites
 - Node.js 18+
 - pnpm
-- Anthropic API Key (Claude)
+- Gemini API Key (free at aistudio.google.com)
 - BNB Chain RPC (public or Ankr/NodeReal)
 
 ### Environment Variables
 ```env
 # Blockchain
-BSC_RPC_URL=https://bsc-dataseed1.binance.org
-BSC_TESTNET_RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
+BSC_RPC_URL=https://data-seed-prebsc-1-s1.bnbchain.org:8545
+CHAIN_ID=97
 
 # AI
-ANTHROPIC_API_KEY=sk-ant-...
+GEMINI_API_KEY=<your key from aistudio.google.com>
 
 # Frontend
 NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID=...
@@ -477,10 +477,10 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 |------|------|
 | BSC gas (testnet) | $0 (faucet) |
 | BSC gas (mainnet, ~200 txs) | ~$0.20 |
-| Claude API (500 requests) | ~$1.50 |
+| Gemini API (free tier) | $0 |
 | Vercel (frontend hosting) | $0 (free tier) |
 | Railway (backend hosting) | $0 (free tier) |
-| **Total hackathon** | **< $5** |
+| **Total hackathon** | **< $1** |
 
 ---
 

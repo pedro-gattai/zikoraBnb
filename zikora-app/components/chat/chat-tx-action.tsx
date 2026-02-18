@@ -79,8 +79,10 @@ export function ChatTxAction({
         <div className="mt-3">
           {isDone && txHash && (
             <div className="flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-green-500" />
-              <span className="text-sm font-medium text-green-500">Confirmed</span>
+              <div className="animate-success-pulse rounded-full">
+                <CheckCircle2 className="h-4 w-4 text-[hsl(var(--success))]" />
+              </div>
+              <span className="text-sm font-medium text-[hsl(var(--success))]">Confirmed</span>
               <TxHashLink hash={txHash} />
             </div>
           )}

@@ -32,7 +32,7 @@
 - [x] Set up NestJS project structure (modules, services, controllers)
 - [x] Implement `BlockchainService` (ethers.js provider, contract interactions)
 - [x] Implement `MarketDataService` (onchain reads: prices, APYs, pool data)
-- [x] Implement `LLMService` (Claude API integration — Sonnet 4.5)
+- [x] Implement `LLMService` (Google Gemini 2.5 Pro — intent classification + reasoning)
 - [x] Implement `RouterAgent` (intent classification, delegation)
 - [x] Implement `TradingAgent` (PancakeSwap V3 swap execution + reasoning)
 - [x] Implement `YieldAgent` (Venus Protocol supply/redeem + APY analysis)
@@ -55,6 +55,9 @@
 - [ ] Connect frontend to backend API (`NEXT_PUBLIC_API_URL`) 👤
 
 ### Integration & Testing (Days 9-10)
+- [x] Fix tokens.ts — token addresses dynamic by chainId (mainnet vs testnet)
+- [x] Fix CORS — add CORS_ORIGINS env var for production URLs
+- [x] Fix docs — correct LLM references (Claude → Gemini)
 - [ ] End-to-end: user chat -> agent reasoning -> onchain tx -> UI update 👤
 - [ ] Test swap flow (USDT -> BNB via PancakeSwap V3) 👤
 - [ ] Test supply flow (USDT -> Venus vUSDT) 👤
@@ -97,7 +100,7 @@
 #### Priority 1 — Connect backend
 1. Fill `zikora-server/.env`:
    - `BSC_RPC_URL=https://bsc-dataseed1.binance.org` (or testnet RPC)
-   - `ANTHROPIC_API_KEY=sk-ant-...`
+   - `GEMINI_API_KEY=<your key from aistudio.google.com>`
 2. `cd zikora-server && pnpm start:dev` → runs on port 3001
 
 #### Priority 2 — Connect frontend
@@ -163,7 +166,7 @@
 - Built `zikora-server/` — full NestJS backend (37 files):
   - BlockchainService: ethers.js v6 provider + contract factories
   - MarketDataService: onchain price quotes (PancakeSwap V3 QuoterV2), Venus APY, token balances, TTL cache
-  - LLMService: Claude API (Sonnet 4.5) for intent classification + reasoning generation
+  - LLMService: Google Gemini 2.5 Pro for intent classification + reasoning generation
   - RouterAgent: classifies intent via LLM, delegates to specialized agents
   - TradingAgent: PancakeSwap V3 swaps with pre-flight checks
   - YieldAgent: Venus Protocol supply/redeem with APY analysis
@@ -175,3 +178,18 @@
 - Frontend signing flow: TxAction → ChatTxAction component → wagmi sendTransaction
 - Built documentation page (/docs) with 9 sections, sidebar TOC, mobile Sheet
 - **All code is written.** Next steps are all manual: fill .env files, connect frontend, deploy to cloud, record demo.
+
+### Feb 17, 2026
+- Full code review of all 4 components — identified 3 bugs:
+  1. `tokens.ts` used hardcoded mainnet addresses even when `CHAIN_ID=97` (testnet) — balance checks returned 0
+  2. CORS config had no support for custom production domains
+  3. Docs referenced "Claude Sonnet 4.5" but backend actually uses Google Gemini 2.5 Pro
+- Fixed `tokens.ts`: refactored to `getTokens(chainId)` and `resolveToken(symbol, chainId)`, pulling addresses from `addresses.ts`
+- Fixed `trading.agent.ts`: removed hardcoded WBNB address, now uses `blockchain.addresses.WBNB`
+- Updated all 5 consumer files (trading, yield, analytics, portfolio, market-data agents)
+- Added `BlockchainService` dependency to `AnalyticsAgent` for chainId access
+- Fixed CORS: added `CORS_ORIGINS` env var support for comma-separated production URLs
+- Updated docs (CLAUDE.md, BENCHMARKS.md, plan.md): corrected all LLM references to Google Gemini 2.5 Pro
+- Updated plan.md env vars section and cost estimates (Gemini = free)
+- Expanded `use-of-ai.md` with detailed AI build log for hackathon submission
+- **Next steps:** obtain Gemini API key, configure .env, test locally, deploy, record demo, submit

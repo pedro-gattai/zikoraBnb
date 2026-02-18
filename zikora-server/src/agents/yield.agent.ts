@@ -4,7 +4,7 @@ import { BlockchainService } from '../blockchain/blockchain.service';
 import { MarketDataService } from '../market-data/market-data.service';
 import { LlmService, ClassifiedIntent } from '../llm/llm.service';
 import { TxAction, TxStep } from '../store/store.service';
-import { resolveToken, TOKENS } from '../config/tokens';
+import { resolveToken, getTokens } from '../config/tokens';
 import { AgentResponse } from './router.agent';
 
 @Injectable()
@@ -45,8 +45,9 @@ export class YieldAgent {
   }
 
   private async handleYieldInfo(message: string): Promise<AgentResponse> {
+    const tokens = getTokens(this.blockchain.chainId);
     const yields: string[] = [];
-    for (const [symbol, token] of Object.entries(TOKENS)) {
+    for (const [symbol, token] of Object.entries(tokens)) {
       if (token.vToken) {
         const apy = await this.marketData.getVenusAPY(token.vToken);
         yields.push(`${symbol}: ${apy.toFixed(2)}% APY`);
@@ -89,11 +90,12 @@ export class YieldAgent {
       };
     }
 
-    const token = resolveToken(tokenSymbol);
+    const token = resolveToken(tokenSymbol, this.blockchain.chainId);
+    const tokens = getTokens(this.blockchain.chainId);
     if (!token || !token.vToken) {
       return {
         role: 'assistant',
-        content: `${tokenSymbol} is not supported for Venus lending. Supported tokens: ${Object.entries(TOKENS).filter(([, t]) => t.vToken).map(([s]) => s).join(', ')}`,
+        content: `${tokenSymbol} is not supported for Venus lending. Supported tokens: ${Object.entries(tokens).filter(([, t]) => t.vToken).map(([s]) => s).join(', ')}`,
         agent: 'yield',
       };
     }
@@ -195,7 +197,7 @@ export class YieldAgent {
       };
     }
 
-    const token = resolveToken(tokenSymbol);
+    const token = resolveToken(tokenSymbol, this.blockchain.chainId);
     if (!token || !token.vToken) {
       return {
         role: 'assistant',

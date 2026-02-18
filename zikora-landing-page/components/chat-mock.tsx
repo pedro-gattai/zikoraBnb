@@ -50,7 +50,7 @@ export function ChatMock() {
         </div>
 
         {/* Messages */}
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 min-h-[232px]">
           {messages.slice(0, visibleCount).map((msg, i) => (
             <div
               key={`msg-${msg.role}-${i}`}

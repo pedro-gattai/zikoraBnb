@@ -17,11 +17,11 @@ export function PositionsList({ portfolio, isLoading }: PositionsListProps) {
       <div className="space-y-4">
         <Card>
           <CardHeader className="pb-3">
-            <Skeleton className="h-5 w-24" />
+            <div className="skeleton-shimmer h-5 w-24 rounded" />
           </CardHeader>
           <CardContent className="space-y-3">
             {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-16 w-full" />
+              <div key={i} className="skeleton-shimmer h-16 w-full rounded" />
             ))}
           </CardContent>
         </Card>

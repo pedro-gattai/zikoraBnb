@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ethers } from 'ethers';
 import { MarketDataService } from '../market-data/market-data.service';
+import { BlockchainService } from '../blockchain/blockchain.service';
 import { LlmService, ClassifiedIntent } from '../llm/llm.service';
-import { TOKENS } from '../config/tokens';
+import { getTokens } from '../config/tokens';
 import { AgentResponse } from './router.agent';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class AnalyticsAgent {
 
   constructor(
     private marketData: MarketDataService,
+    private blockchain: BlockchainService,
     private llm: LlmService,
   ) {}
 
@@ -57,7 +59,7 @@ export class AnalyticsAgent {
     const lines: string[] = [];
     let totalUsd = 0;
 
-    for (const [symbol, token] of Object.entries(TOKENS)) {
+    for (const [symbol, token] of Object.entries(getTokens(this.blockchain.chainId))) {
       if (symbol === 'WBNB') continue;
 
       let balance: bigint;
@@ -81,7 +83,7 @@ export class AnalyticsAgent {
       }
     }
 
-    for (const [symbol, token] of Object.entries(TOKENS)) {
+    for (const [symbol, token] of Object.entries(getTokens(this.blockchain.chainId))) {
       if (!token.vToken) continue;
       const { underlyingBalance } = await this.marketData.getVenusBalance(
         token.vToken,

@@ -1,47 +1,60 @@
+import { ADDRESSES } from './addresses';
+
 export interface TokenMeta {
   symbol: string;
   name: string;
   address: string;
   decimals: number;
-  vToken?: string; // Venus vToken address (mainnet)
+  vToken?: string; // Venus vToken address
 }
 
-// BSC Mainnet tokens
-export const TOKENS: Record<string, TokenMeta> = {
-  BNB: {
-    symbol: 'BNB',
-    name: 'BNB',
-    address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c', // WBNB
-    decimals: 18,
-    vToken: '0xA07c5b74C9B40447a954e1466938b865b6BBea36',
-  },
-  WBNB: {
-    symbol: 'WBNB',
-    name: 'Wrapped BNB',
-    address: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
-    decimals: 18,
-    vToken: '0xA07c5b74C9B40447a954e1466938b865b6BBea36',
-  },
-  USDT: {
-    symbol: 'USDT',
-    name: 'Tether USD',
-    address: '0x55d398326f99059fF775485246999027B3197955',
-    decimals: 18,
-    vToken: '0xfD5840Cd36d94D7229439859C0112a4185BC0255',
-  },
-  USDC: {
-    symbol: 'USDC',
-    name: 'USD Coin',
-    address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
-    decimals: 18,
-  },
-};
+/**
+ * Returns token metadata for the given chainId, pulling addresses from addresses.ts.
+ * Supports BSC Mainnet (56) and BSC Testnet (97).
+ */
+export function getTokens(chainId: number): Record<string, TokenMeta> {
+  const addrs = ADDRESSES[chainId] || ADDRESSES[97];
 
-export function resolveToken(symbolOrAddress: string): TokenMeta | undefined {
+  return {
+    BNB: {
+      symbol: 'BNB',
+      name: 'BNB',
+      address: addrs.WBNB,
+      decimals: 18,
+      vToken: addrs.vBNB,
+    },
+    WBNB: {
+      symbol: 'WBNB',
+      name: 'Wrapped BNB',
+      address: addrs.WBNB,
+      decimals: 18,
+      vToken: addrs.vBNB,
+    },
+    USDT: {
+      symbol: 'USDT',
+      name: 'Tether USD',
+      address: addrs.USDT,
+      decimals: 18,
+      vToken: addrs.vUSDT,
+    },
+    USDC: {
+      symbol: 'USDC',
+      name: 'USD Coin',
+      address: addrs.USDC,
+      decimals: 18,
+    },
+  };
+}
+
+export function resolveToken(
+  symbolOrAddress: string,
+  chainId: number,
+): TokenMeta | undefined {
+  const tokens = getTokens(chainId);
   const upper = symbolOrAddress.toUpperCase();
-  if (TOKENS[upper]) return TOKENS[upper];
+  if (tokens[upper]) return tokens[upper];
   const lower = symbolOrAddress.toLowerCase();
-  return Object.values(TOKENS).find(
+  return Object.values(tokens).find(
     (t) => t.address.toLowerCase() === lower,
   );
 }

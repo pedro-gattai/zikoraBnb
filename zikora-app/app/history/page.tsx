@@ -5,9 +5,14 @@ import { AppShell } from '@/components/layout/app-shell'
 import { TransactionList } from '@/components/history/transaction-list'
 import { TransactionFilters } from '@/components/history/transaction-filters'
 import { useHistory } from '@/hooks/use-history'
+import { useAccount } from 'wagmi'
+import { Card, CardContent } from '@/components/ui/card'
+import { Wallet } from 'lucide-react'
+import { LoadingTimeout } from '@/components/shared/loading-timeout'
 
 export default function HistoryPage() {
-  const { transactions, allTransactions, isLoading, filter, setFilter } = useHistory()
+  const { transactions, allTransactions, isLoading, error, filter, setFilter, refetch } = useHistory()
+  const { isConnected } = useAccount()
 
   const counts = useMemo(() => {
     const c: Record<string, number> = { all: allTransactions.length }
@@ -25,13 +30,30 @@ export default function HistoryPage() {
           <p className="text-sm text-muted-foreground">All your DeFi operations</p>
         </div>
 
-        <TransactionFilters
-          filter={filter}
-          onFilterChange={setFilter}
-          counts={counts}
-        />
+        {!isConnected ? (
+          <Card>
+            <CardContent className="flex flex-col items-center justify-center gap-3 py-16 text-center">
+              <div className="rounded-full bg-secondary p-3">
+                <Wallet className="h-6 w-6 text-muted-foreground" />
+              </div>
+              <p className="text-sm font-medium">Connect your wallet to view transaction history</p>
+              <p className="text-xs text-muted-foreground">
+                Your swaps, supplies, and other operations will appear here
+              </p>
+            </CardContent>
+          </Card>
+        ) : (
+          <>
+            <TransactionFilters
+              filter={filter}
+              onFilterChange={setFilter}
+              counts={counts}
+            />
 
-        <TransactionList transactions={transactions} isLoading={isLoading} />
+            <TransactionList transactions={transactions} isLoading={isLoading} error={error} onRetry={refetch} />
+            <LoadingTimeout isLoading={isLoading} />
+          </>
+        )}
       </div>
     </AppShell>
   )

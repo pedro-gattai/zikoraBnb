@@ -22,10 +22,10 @@ export function PortfolioChart({ data, isLoading }: PortfolioChartProps) {
     return (
       <Card>
         <CardHeader className="pb-3">
-          <Skeleton className="h-5 w-32" />
+          <div className="skeleton-shimmer h-5 w-32 rounded" />
         </CardHeader>
         <CardContent>
-          <Skeleton className="h-48 w-full" />
+          <div className="skeleton-shimmer h-40 md:h-48 w-full rounded" />
         </CardContent>
       </Card>
     )
@@ -39,7 +39,7 @@ export function PortfolioChart({ data, isLoading }: PortfolioChartProps) {
         <CardTitle className="text-base font-heading">Portfolio Value</CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="h-48">
+        <div className="h-40 md:h-48">
           <ResponsiveContainer width="100%" height="100%">
             <AreaChart data={data}>
               <defs>

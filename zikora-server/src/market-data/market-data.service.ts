@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ethers } from 'ethers';
 import { BlockchainService } from '../blockchain/blockchain.service';
-import { TOKENS } from '../config/tokens';
+import { getTokens } from '../config/tokens';
 
 interface CacheEntry<T> {
   value: T;
@@ -130,7 +130,7 @@ export class MarketDataService {
 
   async getDecimals(tokenAddress: string): Promise<number> {
     // Check known tokens first
-    const known = Object.values(TOKENS).find(
+    const known = Object.values(getTokens(this.blockchain.chainId)).find(
       (t) => t.address.toLowerCase() === tokenAddress.toLowerCase(),
     );
     if (known) return known.decimals;

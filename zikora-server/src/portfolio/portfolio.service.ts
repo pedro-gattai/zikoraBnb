@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { ethers } from 'ethers';
 import { MarketDataService } from '../market-data/market-data.service';
 import { BlockchainService } from '../blockchain/blockchain.service';
-import { TOKENS } from '../config/tokens';
+import { getTokens } from '../config/tokens';
 
 export interface TokenBalance {
   symbol: string;
@@ -60,7 +60,8 @@ export class PortfolioService {
     let totalValueUsd = 0;
 
     // Fetch token balances
-    for (const [symbol, token] of Object.entries(TOKENS)) {
+    const tokenMetas = getTokens(this.blockchain.chainId);
+    for (const [symbol, token] of Object.entries(tokenMetas)) {
       if (symbol === 'WBNB') continue;
 
       try {
@@ -95,7 +96,7 @@ export class PortfolioService {
     }
 
     // Fetch Venus positions
-    for (const [symbol, token] of Object.entries(TOKENS)) {
+    for (const [symbol, token] of Object.entries(tokenMetas)) {
       if (!token.vToken) continue;
 
       try {

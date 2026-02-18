@@ -26,6 +26,8 @@ zikoraBnb/
 
 Each subfolder is an independent project with its own `package.json`. There is no root-level package manager workspace — run installs and scripts inside each folder.
 
+Each subfolder has its own `CLAUDE.md` with module-specific conventions.
+
 ---
 
 ## Tech Stack
@@ -36,7 +38,7 @@ Each subfolder is an independent project with its own `package.json`. There is n
 | Backend | NestJS + TypeScript | `zikora-server/` |
 | App Frontend | Next.js + TypeScript + wagmi + RainbowKit | `zikora-app/` |
 | Landing Page | Next.js + TypeScript + Tailwind + shadcn/ui | `zikora-landing-page/` |
-| AI/LLM | Anthropic Claude API (Sonnet 4.5) | `zikora-server/` |
+| AI/LLM | Google Gemini 2.5 Pro | `zikora-server/` |
 | Blockchain | BNB Smart Chain (BSC) Mainnet/Testnet | All |
 
 ---
@@ -123,11 +125,11 @@ cd zikora-contracts && pnpm install && npx hardhat compile
 
 ---
 
-## Current Stage (Feb 8, 2026)
+## Current Stage (Feb 17, 2026)
 
 - **Landing page:** Done, deployed. Documentation page (`/docs`) with 9 sections and sidebar TOC.
 - **App frontend (`zikora-app/`):** Done — wallet connect, chat, portfolio dashboard, decision history, non-custodial signing flow (TxAction → MetaMask). Currently uses mock data.
 - **Smart contracts (`zikora-contracts/`):** ZikoraVault.sol exists but is not used in current non-custodial architecture. Backend interacts directly with PancakeSwap V3 and Venus Protocol contracts.
-- **Backend (`zikora-server/`):** Done — NestJS with BlockchainService, MarketDataService, LLMService (Claude Sonnet 4.5), RouterAgent, TradingAgent, YieldAgent, AnalyticsAgent, StoreService (in-memory). Non-custodial: prepares calldata only, no private keys. REST endpoints: POST /chat, GET /portfolio, GET /transactions, POST /transactions. Not yet deployed.
+- **Backend (`zikora-server/`):** Done — NestJS with BlockchainService, MarketDataService, LLMService (Google Gemini 2.5 Pro), RouterAgent, TradingAgent, YieldAgent, AnalyticsAgent, StoreService (in-memory). Non-custodial: prepares calldata only, no private keys. REST endpoints: POST /chat, GET /portfolio, GET /transactions, POST /transactions. Fixes applied: dynamic tokens.ts (chainId-aware), CORS env var support, docs corrections.
 - **Network:** BSC Testnet only. No mainnet deployment yet.
 - **Data:** Frontend uses mock/placeholder data until backend is connected.

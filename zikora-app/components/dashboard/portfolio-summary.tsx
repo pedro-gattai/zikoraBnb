@@ -1,27 +1,46 @@
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, AlertCircle, RefreshCw } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Button } from '@/components/ui/button'
 import { type Portfolio } from '@/types'
 import { cn } from '@/lib/utils'
 
 interface PortfolioSummaryProps {
   portfolio: Portfolio | null
   isLoading: boolean
+  error?: string | null
+  onRetry?: () => void
 }
 
-export function PortfolioSummary({ portfolio, isLoading }: PortfolioSummaryProps) {
+export function PortfolioSummary({ portfolio, isLoading, error, onRetry }: PortfolioSummaryProps) {
   if (isLoading) {
     return (
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {Array.from({ length: 3 }).map((_, i) => (
           <Card key={i}>
             <CardContent className="p-4">
-              <Skeleton className="mb-2 h-4 w-24" />
-              <Skeleton className="h-8 w-32" />
+              <div className="skeleton-shimmer mb-2 h-4 w-24 rounded" />
+              <div className="skeleton-shimmer h-8 w-32 rounded" />
             </CardContent>
           </Card>
         ))}
       </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardContent className="flex items-center gap-3 p-4">
+          <AlertCircle className="h-5 w-5 shrink-0 text-destructive" />
+          <p className="flex-1 text-sm text-muted-foreground">{error}</p>
+          {onRetry && (
+            <Button onClick={onRetry} variant="outline" size="sm" className="btn-interactive shrink-0 gap-1.5">
+              <RefreshCw className="h-3.5 w-3.5" />
+              Retry
+            </Button>
+          )}
+        </CardContent>
+      </Card>
     )
   }
 
@@ -58,7 +77,7 @@ export function PortfolioSummary({ portfolio, isLoading }: PortfolioSummaryProps
                 <span
                   className={cn(
                     'flex items-center gap-0.5 text-xs font-medium',
-                    stat.positive ? 'text-green-500' : 'text-red-500',
+                    stat.positive ? 'text-[hsl(var(--success))]' : 'text-destructive',
                   )}
                 >
                   {stat.positive ? (

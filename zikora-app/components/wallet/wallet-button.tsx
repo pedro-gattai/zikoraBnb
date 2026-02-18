@@ -15,6 +15,7 @@ export function WalletButton() {
       <Button
         onClick={() => connect({ connector: injected() })}
         size="sm"
+        className="btn-interactive"
       >
         Connect Wallet
       </Button>

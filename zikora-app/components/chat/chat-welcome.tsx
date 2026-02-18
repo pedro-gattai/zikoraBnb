@@ -27,14 +27,14 @@ export function ChatWelcome({ onPromptClick }: ChatWelcomeProps) {
         </p>
       </div>
 
-      <div className="grid w-full max-w-md grid-cols-2 gap-2">
+      <div className="grid w-full max-w-md grid-cols-1 gap-2 sm:grid-cols-2">
         {QUICK_PROMPTS.map((item) => {
           const Icon = ICONS[item.agent] || Search
           return (
             <Button
               key={item.label}
               variant="outline"
-              className="h-auto flex-col items-start gap-1 p-3 text-left"
+              className="btn-interactive h-auto flex-col items-start gap-1 p-3 text-left"
               onClick={() => onPromptClick(item.prompt)}
             >
               <div className="flex items-center gap-2 text-xs font-medium">

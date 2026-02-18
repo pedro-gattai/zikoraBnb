@@ -5,13 +5,21 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  const corsOrigins: (string | RegExp)[] = [
+    'http://localhost:3000',
+    'http://localhost:3001',
+    /\.vercel\.app$/,
+    /\.pages\.dev$/,
+  ];
+
+  // Add custom origins from CORS_ORIGINS env var (comma-separated)
+  const extraOrigins = process.env.CORS_ORIGINS;
+  if (extraOrigins) {
+    extraOrigins.split(',').forEach((o) => corsOrigins.push(o.trim()));
+  }
+
   app.enableCors({
-    origin: [
-      'http://localhost:3000',
-      'http://localhost:3001',
-      /\.vercel\.app$/,
-      /\.pages\.dev$/,
-    ],
+    origin: corsOrigins,
     methods: ['GET', 'POST', 'OPTIONS'],
     credentials: true,
   });
