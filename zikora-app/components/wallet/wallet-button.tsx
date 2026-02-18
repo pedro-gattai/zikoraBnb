@@ -2,7 +2,7 @@
 
 import { useAccount, useConnect, useDisconnect } from 'wagmi'
 import { injected } from 'wagmi/connectors'
-import { bscTestnet } from 'wagmi/chains'
+import { bsc } from 'wagmi/chains'
 import { Button } from '@/components/ui/button'
 
 export function WalletButton() {
@@ -22,7 +22,7 @@ export function WalletButton() {
     )
   }
 
-  if (chain?.id !== bscTestnet.id) {
+  if (chain?.id !== bsc.id) {
     return (
       <Button
         onClick={() => disconnect()}

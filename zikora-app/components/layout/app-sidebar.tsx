@@ -68,7 +68,7 @@ export function AppSidebar({ open, onClose }: AppSidebarProps) {
 
         <div className="border-t border-border px-4 py-3">
           <p className="text-xs text-muted-foreground">
-            BSC Testnet
+            BSC Mainnet
           </p>
         </div>
       </aside>

@@ -1,14 +1,14 @@
 import { createConfig, http } from 'wagmi'
-import { bscTestnet } from 'wagmi/chains'
+import { bsc } from 'wagmi/chains'
 import { injected } from 'wagmi/connectors'
 
 export const config = createConfig({
-  chains: [bscTestnet],
+  chains: [bsc],
   connectors: [injected()],
   transports: {
-    [bscTestnet.id]: http(
-      process.env.NEXT_PUBLIC_BSC_TESTNET_RPC_URL ||
-        'https://data-seed-prebsc-1-s1.binance.org:8545'
+    [bsc.id]: http(
+      process.env.NEXT_PUBLIC_BSC_RPC_URL ||
+        'https://bsc-dataseed1.binance.org/'
     ),
   },
   ssr: true,

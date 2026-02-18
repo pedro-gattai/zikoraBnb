@@ -147,7 +147,7 @@ coverage.json
 | Network | Address | Fee Recipient |
 |---------|---------|---------------|
 | BSC Testnet (97) | `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
-| BSC Mainnet (56) | Not deployed | — |
+| BSC Mainnet (56) | `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
 
 ---
 

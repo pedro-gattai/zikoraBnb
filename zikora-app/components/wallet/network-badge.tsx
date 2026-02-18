@@ -11,7 +11,7 @@ export function NetworkBadge() {
 
   return (
     <Badge variant="outline" className="text-xs font-mono border-primary/30 text-primary">
-      {chainId === 97 ? 'BSC Testnet' : `Chain ${chainId}`}
+      {chainId === 56 ? 'BSC Mainnet' : `Chain ${chainId}`}
     </Badge>
   )
 }

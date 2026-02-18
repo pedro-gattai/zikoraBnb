@@ -164,9 +164,9 @@ Regex fallback if API is unavailable.
 ```bash
 # .env.example
 PORT=3001
-BSC_RPC_URL=https://data-seed-prebsc-1-s1.bnbchain.org:8545
+BSC_RPC_URL=https://bsc-dataseed1.binance.org/
 ANTHROPIC_API_KEY=your-key-here
-CHAIN_ID=97
+CHAIN_ID=56
 CORS_ORIGINS=https://zikora.vercel.app,https://zikora-app.vercel.app
 ```
 

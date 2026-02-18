@@ -1,18 +1,18 @@
 import { type AgentConfig } from '@/types'
 
-export const BSC_TESTNET_CHAIN_ID = 97
+export const BSC_CHAIN_ID = 56
 
-export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://testnet.bscscan.com'
+export const EXPLORER_URL = process.env.NEXT_PUBLIC_EXPLORER_URL || 'https://bscscan.com'
 
 export const CONTRACTS = {
   vault: process.env.NEXT_PUBLIC_VAULT_ADDRESS || '',
-  pancakeRouter: '0xD99D1c33F9fC3444f8101754aBC46c52416550D1',
-  pancakeFactory: '0x6725f303b657a9451d8BA641348b6761A6CC7a17',
+  pancakeRouter: '0x13f4EA83D0bd40E75C8222255bc855a974568Dd4',
+  pancakeFactory: '0x0BFbCF9fa4f9C56B0F40a671Ad40E0805A091865',
   venusComptroller: '0xfD36E2c2a6789Db23113685031d7F16329158384',
-  usdt: '0x337610d27c682E347C9cD60BD4b3b107C9d34dDd',
-  wbnb: '0xae13d989daC2f0dEbFf460aC112a837C89BAa7cd',
-  usdc: '0x64544969ed7EBf5f083679233325356EbE738930',
-  busd: '0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee',
+  usdt: '0x55d398326f99059fF775485246999027B3197955',
+  wbnb: '0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c',
+  usdc: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d',
+  busd: '0xe9e7CEA3DedcA5984780Bafc599bD69ADd087D56',
 } as const
 
 export const TOKENS: Record<string, { symbol: string; name: string; decimals: number }> = {

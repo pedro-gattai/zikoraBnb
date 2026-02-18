@@ -29,9 +29,9 @@ export class BlockchainService implements OnModuleInit {
   onModuleInit() {
     const rpcUrl =
       this.config.get<string>('BSC_RPC_URL') ||
-      'https://data-seed-prebsc-1-s1.bnbchain.org:8545';
-    this.chainId = Number(this.config.get<string>('CHAIN_ID') || '97');
-    this.addresses = ADDRESSES[this.chainId] || ADDRESSES[97];
+      'https://bsc-dataseed1.binance.org/';
+    this.chainId = Number(this.config.get<string>('CHAIN_ID') || '56');
+    this.addresses = ADDRESSES[this.chainId] || ADDRESSES[56];
 
     this.provider = new ethers.JsonRpcProvider(rpcUrl);
 

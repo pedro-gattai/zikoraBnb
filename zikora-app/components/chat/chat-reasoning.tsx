@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { ChevronDown, Brain } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import ReactMarkdown from 'react-markdown'
 
 export function ChatReasoning({ reasoning }: { reasoning: string }) {
   const [open, setOpen] = useState(false)
@@ -24,9 +25,9 @@ export function ChatReasoning({ reasoning }: { reasoning: string }) {
       </button>
       {open && (
         <div className="border-t border-border px-3 py-2">
-          <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">
-            {reasoning}
-          </p>
+          <div className="prose prose-xs prose-invert max-w-none text-muted-foreground [&_p]:text-xs [&_p]:my-1">
+            <ReactMarkdown>{reasoning}</ReactMarkdown>
+          </div>
         </div>
       )}
     </div>

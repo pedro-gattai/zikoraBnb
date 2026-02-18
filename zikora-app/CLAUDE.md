@@ -54,7 +54,7 @@ zikora-app/
 │   │   └── app-header.tsx       # Logo, NetworkBadge, WalletButton
 │   ├── wallet/                  # Web3 integration (2 files)
 │   │   ├── wallet-button.tsx    # Connect/disconnect + address display
-│   │   └── network-badge.tsx    # "BSC Testnet" badge
+│   │   └── network-badge.tsx    # "BSC Mainnet" badge
 │   ├── shared/                  # Reusable (5 files)
 │   │   ├── agent-badge.tsx
 │   │   ├── address-display.tsx
@@ -79,7 +79,7 @@ zikora-app/
 ├── providers/
 │   └── web3-provider.tsx        # WagmiProvider + QueryClientProvider
 ├── lib/
-│   ├── wagmi.ts                 # Wagmi config (BSC Testnet, injected connector)
+│   ├── wagmi.ts                 # Wagmi config (BSC Mainnet, injected connector)
 │   ├── constants.ts             # Addresses, tokens, agent configs, quick prompts
 │   └── utils.ts                 # cn() helper
 ├── tailwind.config.ts
@@ -106,9 +106,9 @@ All pages wrap in `AppShell` (sidebar + header navigation).
 
 **File:** `lib/wagmi.ts`
 
-- **Chain:** BSC Testnet only (chain ID 97)
+- **Chain:** BSC Mainnet (chain ID 56)
 - **Connector:** `injected()` — MetaMask and browser wallets
-- **RPC:** `NEXT_PUBLIC_BSC_TESTNET_RPC_URL` or public fallback
+- **RPC:** `NEXT_PUBLIC_BSC_RPC_URL` or public fallback
 - **SSR:** enabled
 
 **Key wagmi hooks used:**
@@ -163,9 +163,9 @@ All services call the real backend via `apiFetch`. Requires `NEXT_PUBLIC_API_URL
 
 ```bash
 # .env.example
-NEXT_PUBLIC_BSC_TESTNET_RPC_URL=https://data-seed-prebsc-1-s1.binance.org:8545
+NEXT_PUBLIC_BSC_RPC_URL=https://bsc-dataseed1.binance.org/
 NEXT_PUBLIC_API_URL=http://localhost:3001  # Required — backend URL
-NEXT_PUBLIC_EXPLORER_URL=https://testnet.bscscan.com
+NEXT_PUBLIC_EXPLORER_URL=https://bscscan.com
 ```
 
 ---

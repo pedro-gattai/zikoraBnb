@@ -84,10 +84,10 @@ export default function DocsPage() {
           <div className="flex items-start gap-3 rounded-xl border border-[#FF6B2C]/30 bg-[#FF6B2C]/5 p-4">
             <Info className="mt-0.5 h-5 w-5 shrink-0 text-[#FF6B2C]" />
             <div>
-              <p className="font-medium text-foreground">Testnet Only</p>
+              <p className="font-medium text-foreground">BSC Mainnet</p>
               <p className="text-sm">
-                Zikora is currently deployed on BSC Testnet (chain&nbsp;ID
-                97). Do not send real funds.
+                Zikora is deployed on BSC Mainnet (chain&nbsp;ID 56).
+                Transactions use real funds — review carefully before signing.
               </p>
             </div>
           </div>
@@ -100,7 +100,7 @@ export default function DocsPage() {
             </li>
             <li>
               <strong className="text-foreground">AI-powered</strong> &mdash;
-              Claude Sonnet 4.5 classifies your intent and generates a
+              Claude Haiku 4.5 classifies your intent and generates a
               transparent reasoning trace for every operation.
             </li>
             <li>
@@ -119,26 +119,13 @@ export default function DocsPage() {
                 step: "01",
                 icon: Wallet,
                 title: "Connect Wallet",
-                text: "Open the Zikora app and connect MetaMask to BSC Testnet (chain ID 97).",
+                text: "Open the Zikora app and connect MetaMask to BSC Mainnet (chain ID 56).",
               },
               {
                 step: "02",
                 icon: Droplets,
-                title: "Get Testnet BNB",
-                text: (
-                  <>
-                    Visit the{" "}
-                    <a
-                      href="https://www.bnbchain.org/en/testnet-faucet"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[#FF6B2C] underline underline-offset-2"
-                    >
-                      BSC Testnet Faucet
-                    </a>{" "}
-                    to claim free testnet BNB.
-                  </>
-                ),
+                title: "Fund Your Wallet",
+                text: "Make sure you have BNB on BSC Mainnet for gas fees.",
               },
               {
                 step: "03",
@@ -622,7 +609,7 @@ export default function DocsPage() {
               },
               {
                 q: "Which networks are supported?",
-                a: "Zikora currently supports BNB Smart Chain (BSC). During the hackathon, only BSC Testnet (chain ID 97) is active. Mainnet support is planned.",
+                a: "Zikora currently supports BNB Smart Chain (BSC). Zikora is deployed on BSC Mainnet (chain ID 56).",
               },
               {
                 q: "What tokens can I trade?",
@@ -642,7 +629,7 @@ export default function DocsPage() {
               },
               {
                 q: "How does the AI work?",
-                a: "Zikora uses Claude Sonnet 4.5 (Anthropic) for intent classification and reasoning. The RouterAgent classifies your natural language input, delegates to a specialist agent, and the agent prepares the optimal transaction with a transparent reasoning trace.",
+                a: "Zikora uses Claude Haiku 4.5 (Anthropic) for intent classification and reasoning. The RouterAgent classifies your natural language input, delegates to a specialist agent, and the agent prepares the optimal transaction with a transparent reasoning trace.",
               },
             ].map((item, i) => (
               <AccordionItem

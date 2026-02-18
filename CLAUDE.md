@@ -67,7 +67,7 @@ See `zikora-brand/CLAUDE.md` for the full design system. Key rules:
 | USDT (BSC) | `0x55d398326f99059fF775485246999027B3197955` |
 | WBNB | `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` |
 | USDC (BSC) | `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` |
-| ZikoraRouter (Testnet) | `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` |
+| ZikoraRouter (Mainnet) | `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0` |
 
 ---
 
@@ -146,8 +146,8 @@ cd zikora-contracts && pnpm install && npx hardhat compile
 ## Current Stage (Feb 18, 2026)
 
 - **Landing page:** Done, deployed to Vercel.
-- **App frontend (`zikora-app/`):** Done, deployed to Vercel. Connected to backend API.
-- **Smart contracts (`zikora-contracts/`):** ZikoraRouter.sol deployed & verified on BSC Testnet at `0x57491f59f41121f907e3820c6e57080D9BCaF5a9`.
+- **App frontend (`zikora-app/`):** Done, deployed to Vercel. Connected to backend API. Markdown rendering enabled (react-markdown).
+- **Smart contracts (`zikora-contracts/`):** ZikoraRouter.sol deployed & verified on BSC Mainnet at `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0`.
 - **Backend (`zikora-server/`):** Done, deployed to cloud. All agents operational.
-- **Network:** BSC Testnet. Contract verified on BSCScan.
-- **Status:** All components deployed. Running E2E tests on production environment.
+- **Network:** BSC Mainnet (chain 56). Frontend and backend configured for mainnet.
+- **Status:** All components deployed. Migrated from testnet to mainnet for PancakeSwap V3 liquidity. Running E2E tests on production environment.

@@ -10,10 +10,10 @@ export interface TokenMeta {
 
 /**
  * Returns token metadata for the given chainId, pulling addresses from addresses.ts.
- * Supports BSC Mainnet (56) and BSC Testnet (97).
+ * Supports BSC Mainnet (56).
  */
 export function getTokens(chainId: number): Record<string, TokenMeta> {
-  const addrs = ADDRESSES[chainId] || ADDRESSES[97];
+  const addrs = ADDRESSES[chainId] || ADDRESSES[56];
 
   return {
     BNB: {

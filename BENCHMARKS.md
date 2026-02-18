@@ -72,7 +72,7 @@
 - [x] Deploy landing page to Vercel ✅
 - [x] Deploy app frontend to Vercel ✅
 - [x] Deploy backend to Railway/Render ✅
-- [ ] Deploy to BSC Mainnet (if confident) 👤
+- [x] Deploy to BSC Mainnet — frontend + backend configured for chain 56 ✅
 - [ ] Update landing page CTA links to deployed app URL 👤
 - [ ] Final end-to-end test on production 👤
 
@@ -233,10 +233,18 @@
 - [x] **ZikoraRouter deployed to BSC Testnet** — `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` (fee recipient: `0xD776060a35c0b91b2E456e92180a184f50e99324`)
 - [x] Updated `addresses.ts` with deployed ZikoraRouter address (chain 97)
 
+### Mainnet Migration + Markdown Fix
+- [x] Installed `react-markdown` + `@tailwindcss/typography` in zikora-app
+- [x] Markdown rendering for assistant messages and agent reasoning
+- [x] Migrated frontend from BSC Testnet (97) to BSC Mainnet (56)
+- [x] Updated wagmi config, constants, wallet components, env files
+- [x] Migrated backend `.env` to BSC Mainnet RPC + CHAIN_ID=56
+
 ### Deploys & Verification
 - [x] ZikoraRouter verified on BSCScan Testnet ✅
 - [x] Backend deployed to cloud ✅
 - [x] App frontend deployed to Vercel ✅
 - [x] Landing page deployed to Vercel ✅
 - [x] Frontend connected to backend API ✅
+- [x] Deploy ZikoraRouter to BSC Mainnet ✅ (`0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0`)
 - [ ] E2E testing on deployed environment 👤 (in progress)

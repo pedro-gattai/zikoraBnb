@@ -5,6 +5,7 @@ import { ChatReasoning } from './chat-reasoning'
 import { ChatTxResult } from './chat-tx-result'
 import { ChatTxAction } from './chat-tx-action'
 import { AntIcon } from '@/components/zikora-logo'
+import ReactMarkdown from 'react-markdown'
 
 interface ChatMessageProps {
   message: ChatMessageType
@@ -63,7 +64,13 @@ export function ChatMessage({ message, onSignTxAction }: ChatMessageProps) {
                 : 'bg-secondary text-foreground rounded-tl-md',
           )}
         >
-          <div className="whitespace-pre-wrap">{message.content}</div>
+          {isUser ? (
+            <div className="whitespace-pre-wrap">{message.content}</div>
+          ) : (
+            <div className="prose prose-sm prose-invert max-w-none [&_table]:text-xs [&_th]:px-2 [&_td]:px-2 [&_th]:py-1 [&_td]:py-1 [&_h1]:text-base [&_h1]:font-bold [&_h1]:mb-2 [&_h2]:text-sm [&_h2]:font-semibold [&_p]:my-1 [&_ul]:my-1 [&_ol]:my-1">
+              <ReactMarkdown>{message.content}</ReactMarkdown>
+            </div>
+          )}
         </div>
 
         {message.txAction && (
