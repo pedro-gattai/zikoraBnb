@@ -55,13 +55,14 @@ zikora-app/
 │   ├── wallet/                  # Web3 integration (2 files)
 │   │   ├── wallet-button.tsx    # Connect/disconnect + address display
 │   │   └── network-badge.tsx    # "BSC Mainnet" badge
-│   ├── shared/                  # Reusable (5 files)
+│   ├── shared/                  # Reusable (6 files)
 │   │   ├── agent-badge.tsx
 │   │   ├── address-display.tsx
 │   │   ├── tx-hash-link.tsx     # BSCScan explorer link
 │   │   ├── token-icon.tsx
-│   │   └── loading-dots.tsx
-│   ├── ui/                      # shadcn/ui components (13 files)
+│   │   ├── loading-dots.tsx
+│   │   └── loading-timeout.tsx
+│   ├── ui/                      # shadcn/ui components (11 files)
 │   └── zikora-logo.tsx
 ├── hooks/
 │   ├── use-chat.ts              # Chat logic + tx signing flow

@@ -54,7 +54,9 @@ export function Navbar() {
 
         <div className="hidden md:block">
           <a
-            href="#"
+            href="https://zikora-app.pages.dev/"
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center rounded-xl bg-[#FF6B2C] px-5 py-2.5 font-heading text-sm font-semibold text-[#12121A] transition-all duration-200 hover:bg-[#FF8F5C] hover:shadow-[0_0_20px_rgba(255,107,44,0.3)] active:scale-[0.98]"
           >
             Launch App
@@ -87,7 +89,9 @@ export function Navbar() {
               </a>
             ))}
             <a
-              href="#"
+              href="https://zikora-app.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="mt-2 inline-flex items-center justify-center rounded-xl bg-[#FF6B2C] px-5 py-2.5 font-heading text-sm font-semibold text-[#12121A] transition-all duration-200 hover:bg-[#FF8F5C] active:scale-[0.98]"
             >
               Launch App

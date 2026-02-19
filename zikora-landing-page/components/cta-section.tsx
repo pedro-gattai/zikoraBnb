@@ -20,7 +20,9 @@ export function CtaSection() {
         </h2>
 
         <a
-          href="#"
+          href="https://zikora-app.pages.dev/"
+          target="_blank"
+          rel="noopener noreferrer"
           className="mt-10 inline-flex items-center rounded-xl bg-[#FF6B2C] px-9 py-4 font-heading text-base font-semibold text-[#12121A] transition-all duration-200 hover:bg-[#FF8F5C] hover:shadow-[0_0_24px_rgba(255,107,44,0.35)] active:scale-[0.98]"
         >
           Launch App

@@ -17,7 +17,9 @@ export function HeroSection() {
           </p>
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 lg:justify-start">
             <a
-              href="#"
+              href="https://zikora-app.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
               className="inline-flex items-center rounded-xl bg-[#FF6B2C] px-7 py-3 font-heading text-sm font-semibold text-[#12121A] transition-all duration-200 hover:bg-[#FF8F5C] hover:shadow-[0_0_24px_rgba(255,107,44,0.35)] active:scale-[0.98]"
             >
               Launch App

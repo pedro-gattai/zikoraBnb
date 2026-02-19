@@ -4,7 +4,7 @@ const linkColumns = [
   {
     heading: "Product",
     links: [
-      { label: "Launch App", href: "#" },
+      { label: "Launch App", href: "https://zikora-app.pages.dev/", target: "_blank", rel: "noopener noreferrer" },
       { label: "Features", href: "#features" },
       { label: "Docs", href: "/docs" },
     ],
@@ -70,6 +70,7 @@ export function Footer() {
                     <li key={link.label}>
                       <a
                         href={link.href}
+                        {...("target" in link && { target: link.target, rel: link.rel })}
                         className="text-sm text-[#A8A4B8] transition-colors duration-200 hover:text-foreground"
                       >
                         {link.label}

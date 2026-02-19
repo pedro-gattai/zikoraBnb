@@ -15,7 +15,7 @@ Zikora is a DeFAI (DeFi + AI) platform for BNB Chain. Users connect a wallet and
 ```
 zikoraBnb/
 ├── zikora-landing-page/   # Marketing landing page (Next.js + Tailwind + shadcn/ui)
-├── zikora-app/            # Product frontend (Next.js + wagmi + RainbowKit)
+├── zikora-app/            # Product frontend (Next.js + wagmi)
 ├── zikora-server/         # Backend + AI agents (NestJS + TypeScript)
 ├── zikora-contracts/      # Smart contracts (Hardhat + Solidity)
 ├── zikora-brand/          # Brand assets (logos, colors, design system)
@@ -36,7 +36,7 @@ Each subfolder has its own `CLAUDE.md` with module-specific conventions.
 |-------|-----------|--------|
 | Smart Contracts | Solidity 0.8.20 + Hardhat | `zikora-contracts/` |
 | Backend | NestJS + TypeScript | `zikora-server/` |
-| App Frontend | Next.js + TypeScript + wagmi + RainbowKit | `zikora-app/` |
+| App Frontend | Next.js + TypeScript + wagmi | `zikora-app/` |
 | Landing Page | Next.js + TypeScript + Tailwind + shadcn/ui | `zikora-landing-page/` |
 | AI/LLM | Claude Haiku 4.5 (Anthropic) | `zikora-server/` |
 | Blockchain | BNB Smart Chain (BSC) Mainnet/Testnet | All |
