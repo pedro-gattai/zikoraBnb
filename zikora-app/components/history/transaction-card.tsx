@@ -59,13 +59,13 @@ export function TransactionCard({ tx }: { tx: Transaction }) {
 
         <div className="shrink-0 text-right">
           <p className="text-xs text-muted-foreground">
-            {tx.timestamp.toLocaleDateString('en-US', {
+            {new Date(tx.timestamp).toLocaleDateString('en-US', {
               month: 'short',
               day: 'numeric',
             })}
           </p>
           <p className="text-[10px] text-muted-foreground">
-            {tx.timestamp.toLocaleTimeString([], {
+            {new Date(tx.timestamp).toLocaleTimeString([], {
               hour: '2-digit',
               minute: '2-digit',
             })}
