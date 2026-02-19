@@ -67,7 +67,7 @@ See `zikora-brand/CLAUDE.md` for the full design system. Key rules:
 | USDT (BSC) | `0x55d398326f99059fF775485246999027B3197955` |
 | WBNB | `0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c` |
 | USDC (BSC) | `0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d` |
-| ZikoraRouter (Mainnet) | `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0` |
+| ZikoraRouter (Mainnet) | `0x33A70851FC45d12293675627c55c1aFd36644aDC` |
 
 ---
 

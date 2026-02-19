@@ -199,7 +199,7 @@
 - **ZikoraRouter contract:** non-custodial fee router (0.10% / 10 bps) for PancakeSwap V3 + Venus Protocol
   - `swapExactInput()`, `swapExactInputBNB()`, `supplyToVenus()`, `redeemFromVenus()`
   - Admin: `setFeeBps()`, `setFeeRecipient()`, `withdrawFees()`, `rescueToken()`
-  - OZ 5.x (Ownable, ReentrancyGuard, SafeERC20), `forceApprove`, deadline=`block.timestamp`
+  - OZ 5.x (Ownable, ReentrancyGuard, SafeERC20), `forceApprove`
   - Mock contracts + full test suite
   - Deploy script for BSC Testnet
 - **Backend integration:** TradingAgent + YieldAgent now route through ZikoraRouter
@@ -213,7 +213,7 @@
 ### Smart Contracts — ZikoraRouter
 - [x] `ZikoraRouter.sol` — multi-protocol fee router (0.10% fee)
 - [x] `IWBNB.sol` interface
-- [x] `IPancakeV3Router.sol` — add `deadline` field
+- [x] `IPancakeV3Router.sol` — matches PancakeSwap V3 Smart Router (no `deadline` field)
 - [x] Mock contracts (`MockPancakeRouter.sol`, `MockVToken.sol`)
 - [x] `ZikoraRouter.test.ts` — comprehensive test suite
 - [x] `deploy-router.ts` — deployment script
@@ -246,5 +246,5 @@
 - [x] App frontend deployed to Vercel ✅
 - [x] Landing page deployed to Vercel ✅
 - [x] Frontend connected to backend API ✅
-- [x] Deploy ZikoraRouter to BSC Mainnet ✅ (`0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0`)
+- [x] Deploy ZikoraRouter to BSC Mainnet ✅ (`0x33A70851FC45d12293675627c55c1aFd36644aDC`)
 - [ ] E2E testing on deployed environment 👤 (in progress)

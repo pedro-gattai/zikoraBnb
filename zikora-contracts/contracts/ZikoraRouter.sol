@@ -111,7 +111,6 @@ contract ZikoraRouter is Ownable, ReentrancyGuard {
                 tokenOut: tokenOut,
                 fee: poolFee,
                 recipient: msg.sender,
-                deadline: block.timestamp,
                 amountIn: swapAmount,
                 amountOutMinimum: amountOutMin,
                 sqrtPriceLimitX96: 0
@@ -155,7 +154,6 @@ contract ZikoraRouter is Ownable, ReentrancyGuard {
                 tokenOut: tokenOut,
                 fee: poolFee,
                 recipient: msg.sender,
-                deadline: block.timestamp,
                 amountIn: swapAmount,
                 amountOutMinimum: amountOutMin,
                 sqrtPriceLimitX96: 0

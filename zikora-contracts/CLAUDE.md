@@ -61,7 +61,7 @@ Non-custodial fee router with owner-controlled fee settings:
 
 **Fee mechanism:** 0.10% (10 bps) deducted from input amount before forwarding to protocol. Fee stays in the contract until `withdrawFees()` is called.
 
-**Security:** OpenZeppelin Ownable + ReentrancyGuard + SafeERC20. `forceApprove` for protocol interactions. `deadline = block.timestamp` for swaps.
+**Security:** OpenZeppelin Ownable + ReentrancyGuard + SafeERC20. `forceApprove` for protocol interactions.
 
 ---
 
@@ -147,7 +147,7 @@ coverage.json
 | Network | Address | Fee Recipient |
 |---------|---------|---------------|
 | BSC Testnet (97) | `0x57491f59f41121f907e3820c6e57080D9BCaF5a9` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
-| BSC Mainnet (56) | `0x3284dB5e5C28d7dE56a6a8325691F8B47003f7b0` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
+| BSC Mainnet (56) | `0x33A70851FC45d12293675627c55c1aFd36644aDC` | `0xD776060a35c0b91b2E456e92180a184f50e99324` |
 
 ---
 
